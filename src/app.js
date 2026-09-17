@@ -1274,6 +1274,18 @@
       target = Math.max(0, Math.min(total - 1, target));
       if (target === activeIndex) return;
       var dir = target > activeIndex ? 1 : -1;
+
+      /* Колесо/свайп/стрелки вверх-вниз больше не листают карточки витрины —
+         это единственная задача кнопок ◀ ▶ (см. stepProject ниже). Если
+         соседний шаг указывает на ТУ ЖЕ секцию витрины, что и текущая,
+         сразу перескакиваем к следующей ДРУГОЙ секции — витрина при
+         скролле/свайпе проходится одним шагом, а не тремя. */
+      while (target > 0 && target < total - 1 && steps[target].el === steps[activeIndex].el) {
+        target += dir;
+      }
+      target = Math.max(0, Math.min(total - 1, target));
+      if (target === activeIndex) return;
+
       var from = steps[activeIndex], to = steps[target];
 
       if (from.el === to.el) {
@@ -1289,7 +1301,7 @@
       isAnimating = true;
       // Держим вход закрытым заметно дольше самого перехода — гасит
       // инерционный хвост трекпада (см. комментарий у объявления navLockUntil).
-      navLockUntil = Date.now() + DURATION + 550;
+      navLockUntil = Date.now() + DURATION + 900;
       var enteringShowcase = to.el.classList.contains('show');
 
       /* Фон (шейдер), линия прогресса, состояние навигации и проявление

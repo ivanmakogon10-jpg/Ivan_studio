@@ -1423,7 +1423,14 @@ html.cine-on, html.cine-on body {
   z-index: 1;
 }
 .cine-slide.is-active { opacity: 1; visibility: visible; pointer-events: auto; z-index: 2; }
-.cine-slide.is-transitioning { visibility: visible; pointer-events: none; }
+/* will-change здесь, а не в базовом .cine-slide — чтобы браузер не держал
+   постоянно 8-9 полноэкранных слоёв в памяти GPU, а выносил на свой слой
+   только слайды, которые прямо сейчас участвуют в переходе. Класс
+   ставится синхронно, до принудительного reflow (void toEl.offsetHeight
+   в transitionSlides, app.js) — так что слой готов ДО того, как на
+   следующем кадре реально начнётся анимация opacity/transform, а не
+   создаётся «на лету» в момент первого же изменения этих свойств. */
+.cine-slide.is-transitioning { visibility: visible; pointer-events: none; will-change: opacity, transform; }
 
 /* --- hero: занимает весь экран, подпись/фраза/кнопки центрируются
    в оставшемся пространстве между верхним отступом и нижним рядом --- */

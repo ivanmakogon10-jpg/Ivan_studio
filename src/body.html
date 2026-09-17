@@ -6,11 +6,6 @@
 
 <div class="progress" id="progress" aria-hidden="true"><i></i></div>
 
-<div class="cursor" id="cursor" aria-hidden="true">
-  <div class="cursor__ring"><span class="cursor__label" id="cursorLabel"></span></div>
-  <div class="cursor__dot"></div>
-</div>
-
 <!-- HEADER -->
 <header class="nav" id="nav">
   <div class="shell nav__in">
@@ -95,7 +90,7 @@
         <div class="show__plate" id="showPlate">
           <div class="dev dev--mac">
             <span class="dev__glow" aria-hidden="true"></span>
-            <a class="dev__screen" id="macScreen" href="#" target="_blank" rel="noopener" data-cursor="Открыть"></a>
+            <a class="dev__screen" id="macScreen" href="#" target="_blank" rel="noopener"></a>
             <img class="dev__body" id="showMac" src="" alt="" decoding="async">
           </div>
           <div class="dev dev--phone">
@@ -107,10 +102,10 @@
       </div>
 
       <div class="show__ui" id="showUi">
-        <button class="show__arrow show__arrow--prev" id="showPrev" type="button" aria-label="Предыдущая работа" data-cursor="Назад">
+        <button class="show__arrow show__arrow--prev" id="showPrev" type="button" aria-label="Предыдущая работа">
           <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M20 12H5M11 6l-6 6 6 6"/></svg>
         </button>
-        <button class="show__arrow show__arrow--next" id="showNext" type="button" aria-label="Следующая работа" data-cursor="Дальше">
+        <button class="show__arrow show__arrow--next" id="showNext" type="button" aria-label="Следующая работа">
           <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M4 12h15M13 6l6 6-6 6"/></svg>
         </button>
 
@@ -118,7 +113,7 @@
           <span class="show__count mono"><b id="showNum">01</b><i>/</i><span id="showTotal">03</span></span>
           <span class="show__name" id="showName"></span>
           <span class="show__meta mono" id="showMeta"></span>
-          <a class="show__open" id="showOpen" href="#" target="_blank" rel="noopener" data-cursor="Открыть">
+          <a class="show__open" id="showOpen" href="#" target="_blank" rel="noopener">
             <span id="showOpenLabel">Открыть сайт</span>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8"/></svg>
           </a>

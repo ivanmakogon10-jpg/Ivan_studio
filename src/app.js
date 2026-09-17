@@ -91,37 +91,6 @@
     if (meta) meta.setAttribute('content', '#0A0A0B');
   })();
 
-  /* ---------- 5. КУРСОР ---------- */
-  var cursor = $('#cursor'), cLabel = $('#cursorLabel');
-  if (cursor && fine.matches && !reduced.matches) {
-    document.body.classList.add('cursor-on');
-    var cx = 0, cy = 0, tx = 0, ty = 0, running = false;
-    function step() {
-      cx += (tx - cx) * 0.2; cy += (ty - cy) * 0.2;
-      cursor.style.transform = 'translate3d(' + cx.toFixed(2) + 'px,' + cy.toFixed(2) + 'px,0)';
-      if (Math.abs(tx - cx) < 0.3 && Math.abs(ty - cy) < 0.3) { running = false; return; }
-      requestAnimationFrame(step);
-    }
-    document.addEventListener('mousemove', function (e) {
-      tx = e.clientX; ty = e.clientY;
-      if (!cursor.classList.contains('on')) { cx = tx; cy = ty; cursor.classList.add('on'); }
-      if (!running) { running = true; requestAnimationFrame(step); }
-    }, { passive: true });
-    document.addEventListener('mouseleave', function () { cursor.classList.remove('on'); });
-    document.addEventListener('mouseover', function (e) {
-      var t = e.target;
-      var labelled = t.closest && t.closest('[data-cursor]');
-      if (labelled) {
-        cursor.dataset.mode = 'label';
-        cLabel.textContent = labelled.getAttribute('data-cursor');
-        return;
-      }
-      var link = t.closest && t.closest('a, button, label, [role="button"], input, textarea');
-      cursor.dataset.mode = link ? 'link' : '';
-      cLabel.textContent = '';
-    }, { passive: true });
-  }
-
   /* ---------- 6. МАГНИТНЫЕ КНОПКИ ---------- */
   function magnetise(node) {
     if (!fine.matches || reduced.matches || node.dataset.magnetised) return;
@@ -306,7 +275,6 @@
       var a = document.createElement('a');
       a.className = 'srow';
       a.href = '#brief';
-      a.setAttribute('data-cursor', 'Заявка');
       a.setAttribute('aria-label', s.title + ' — перейти к заявке с этим вариантом');
       a.innerHTML =
         '<span class="srow__n mono">' + String(i + 1).padStart(2, '0') + '</span>' +

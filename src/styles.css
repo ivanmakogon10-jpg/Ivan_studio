@@ -1071,14 +1071,8 @@ a { color: inherit; text-decoration: none; }
 .nav.on-hero:not(.stuck) .nav__link span::after { color: var(--on-hero); }
 .nav.on-hero:not(.stuck) .burger span { background: var(--on-hero); }
 
-/* полоса прогресса ведётся прокруткой без JS там, где это поддерживается */
-@supports (animation-timeline: scroll()) {
-  .progress i {
-    animation: progressGrow linear both;
-    animation-timeline: scroll(root block);
-  }
-  @keyframes progressGrow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
-}
+/* полоса прогресса ведётся из JS по номеру слайда (кино-навигация,
+   раздел 23 app.js) — документ больше не скроллится в обычном смысле */
 @media (prefers-reduced-motion: reduce) {
   .progress i { transition: none; }
 }
@@ -1395,4 +1389,106 @@ a { color: inherit; text-decoration: none; }
 
 @media (prefers-reduced-motion: reduce) {
   .card, .mini { transition: none; }
+}
+
+/* =============================================================
+   16. КИНО-НАВИГАЦИЯ
+   Сайт больше не длинный скролл-лендинг: каждый крупный раздел —
+   отдельный полноэкранный «слайд» (.cine-slide), переходы между
+   которыми проигрывает app.js (раздел 23) по триггеру колеса мыши
+   или свайпа, а не по позиции прокрутки. Слайды лежат друг на друге
+   (position: fixed) и включаются/выключаются классами:
+     .is-active         — текущий, видимый и кликабельный слайд
+     .is-transitioning  — временное состояние на время перехода
+                           (видим, но не кликабелен — стили входа/
+                           выхода app.js ставит инлайном)
+   Витрина работ (#showcase) — один физический слайд, который
+   считается тремя шагами (KEMPO / NOIR TABLE / NORTH & CO.) —
+   между ними наружная плашка не уезжает, меняется только контент
+   экранов устройств (см. app.js, раздел 21).
+   ============================================================= */
+html.cine-on, html.cine-on body {
+  height: 100%;
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
+.cine-slide {
+  position: fixed;
+  inset: 0;
+  height: 100dvh;
+  width: 100%;
+  overflow: hidden;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  z-index: 1;
+}
+.cine-slide.is-active { opacity: 1; visibility: visible; pointer-events: auto; z-index: 2; }
+.cine-slide.is-transitioning { visibility: visible; pointer-events: none; }
+
+/* --- hero: занимает весь экран, подпись/фраза/кнопки центрируются
+   в оставшемся пространстве между верхним отступом и нижним рядом --- */
+.hero.cine-slide {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.hero.cine-slide .hero__mid { flex: 1 1 auto; min-height: 0; }
+
+/* --- витрина: сцена заполняет весь слайд без внешней прокрутки --- */
+.show.cine-slide .show__sticky { position: relative; height: 100%; }
+
+/* --- услуги / подход / о студии / заявка: контент центрируется по
+   высоте экрана, отступы и промежутки сжаты под один экран --- */
+.band.cine-slide > .shell {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  overflow: hidden;
+}
+.band.cine-slide .sec { padding-block: clamp(80px, 11vh, 108px) var(--s3); }
+.band.cine-slide .about__grid { gap: var(--s4); }
+@media (min-width: 900px) { .band.cine-slide .about__grid { gap: var(--s5); } }
+.brief.cine-slide .brief__main { min-height: 0; }
+.brief.cine-slide .brief__done { min-height: 0; }
+@media (max-width: 719px) {
+  .brief.cine-slide .tiles { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+  .brief.cine-slide .tile span { min-height: 56px; padding: 10px 12px; }
+  .brief.cine-slide .brief__fields { margin-top: var(--s3); gap: var(--s2); }
+  .brief.cine-slide .brief__q { font-size: var(--t-h4); }
+  .brief.cine-slide .grid2 { grid-template-columns: repeat(2, 1fr); gap: var(--s2) var(--s3); }
+  .brief.cine-slide .field input { padding: 9px 0; }
+  .brief.cine-slide .field textarea { min-height: 84px; }
+}
+
+/* --- подход: 4 шага на одном экране — короче отступы, без второй
+   строки детали (текста и так хватает), картинка чуть ниже --- */
+.process.cine-slide .prow { padding-block: clamp(12px, 1.6vw, 20px); }
+.process.cine-slide .prow p + p { display: none; }
+.process.cine-slide .prow__vis { aspect-ratio: 21 / 7; }
+
+/* --- услуги на узком экране: пять строк умещаются без описания —
+   оно и так дублирует то, что скажешь в переписке --- */
+@media (max-width: 879px) {
+  .services.cine-slide .srow { padding-block: clamp(8px, 1.6vh, 14px); }
+  .services.cine-slide .srow__scope { display: none; }
+}
+
+/* --- контакты: сам блок и подвал делят экран, подвал прижат вниз --- */
+[data-section="contact"].cine-slide { display: flex; flex-direction: column; }
+[data-section="contact"].cine-slide .contact {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  overflow: hidden;
+}
+[data-section="contact"].cine-slide .contact__top { padding-block: clamp(80px, 11vh, 108px) var(--s3); }
+[data-section="contact"].cine-slide .foot { flex: 0 0 auto; }
+
+@media (prefers-reduced-motion: reduce) {
+  .cine-slide { transition: none !important; }
 }

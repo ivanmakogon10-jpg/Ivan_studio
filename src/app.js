@@ -40,6 +40,12 @@
   var particleField = null;   // поле частиц первого экрана, см. раздел 19
   var shaderField = null;     // фон-нити на весь сайт от витрины до подвала, см. раздел 22
 
+  /* Маленькие API, которые собирают себе разделы навигации (7), подхода
+     (13), витрины (21) и фона (22) — раньше эти разделы сами слушали
+     скролл, теперь ими управляет раздел 23 (кино-навигация), поэтому
+     каждый оставляет здесь ссылку на свои функции. */
+  var navAPI = null, processAPI = null, progressAPI = null, showcaseAPI = null, shaderAPI = null;
+
   /* ---------- 2. SEO ---------- */
   (function seo() {
     if (typeof SITE === 'undefined' || !SITE.url) return;
@@ -139,35 +145,36 @@
   // дублируем подпись для «переката» при наведении
   $$('.nav__link span').forEach(function (s) { s.setAttribute('data-copy', s.textContent); });
 
-  var syncNav = rafThrottle(function () { nav.classList.toggle('stuck', window.scrollY > 20); });
-  syncNav();
-  window.addEventListener('scroll', syncNav, { passive: true });
-
-  // светлый текст навигации только пока она над тёмным первым экраном
-  (function navOverHero() {
-    var hero = $('#top');
-    if (!hero) return;
-    var io = new IntersectionObserver(function (en) {
-      nav.classList.toggle('on-hero', en[0].isIntersecting);
-    }, { rootMargin: '-72px 0px 0px 0px', threshold: 0 });
-    io.observe(hero);
-  })();
-
   var navLinks = $$('.nav__link');
   var linkBySection = {};
   navLinks.forEach(function (l) {
     var id = l.getAttribute('href').slice(1);
     if (document.getElementById(id)) linkBySection[id] = l;
   });
-  var navObs = new IntersectionObserver(function (entries) {
-    entries.forEach(function (en) {
-      if (!en.isIntersecting) return;
-      var link = linkBySection[en.target.id];
+
+  /* Раньше .stuck/.on-hero и активная ссылка зависели от window.scrollY
+     и IntersectionObserver. Теперь страница — набор полноэкранных
+     «слайдов» (раздел 23), реальный скролл документа не идёт, поэтому
+     состояние навигации ставит кино-навигация по текущему слайду. */
+  navAPI = {
+    setState: function (onHero, sectionId) {
+      nav.classList.toggle('stuck', !onHero);
+      nav.classList.toggle('on-hero', onHero);
       navLinks.forEach(function (l) { l.removeAttribute('aria-current'); });
+      var link = sectionId && linkBySection[sectionId];
       if (link) link.setAttribute('aria-current', 'true');
+    },
+    goTo: function (id) { if (window.__cine) window.__cine.goToSection(id); }
+  };
+  navLinks.forEach(function (l) {
+    l.addEventListener('click', function (e) {
+      var id = l.getAttribute('href').slice(1);
+      if (document.getElementById(id) && window.__cine) {
+        e.preventDefault();
+        window.__cine.goToSection(id);
+      }
     });
-  }, { rootMargin: '-45% 0px -50% 0px' });
-  Object.keys(linkBySection).forEach(function (id) { navObs.observe(document.getElementById(id)); });
+  });
 
   function toggleSheet(open) {
     sheet.classList.toggle('open', open);
@@ -182,8 +189,18 @@
     else burger.focus({ preventScroll: true });
   }
   burger.addEventListener('click', function () { toggleSheet(!sheet.classList.contains('open')); });
-  $$('.sheet__link, .sheet__foot a', sheet).forEach(function (a) {
+  $$('.sheet__foot a', sheet).forEach(function (a) {
     a.addEventListener('click', function () { toggleSheet(false); });
+  });
+  $$('.sheet__link', sheet).forEach(function (a) {
+    a.addEventListener('click', function (e) {
+      var id = a.getAttribute('href').slice(1);
+      toggleSheet(false);
+      if (document.getElementById(id) && window.__cine) {
+        e.preventDefault();
+        window.setTimeout(function () { window.__cine.goToSection(id); }, 260);
+      }
+    });
   });
 
   /* ---------- 9. СХЕМЫ ЭТАПОВ ---------- */
@@ -329,22 +346,26 @@
     rail.innerHTML = '<i></i>';
     procList.appendChild(rail);
     var fill = $('i', rail);
+    var rows = $$('.prow', procList);
 
-    var pObs = new IntersectionObserver(function (en) {
-      en.forEach(function (e) { e.target.classList.toggle('active', e.isIntersecting); });
-    }, { rootMargin: '-42% 0px -42% 0px' });
-    $$('.prow', procList).forEach(function (p) { pObs.observe(p); });
-
-    // линия наполняется по мере прохождения секции
-    var syncRail = rafThrottle(function () {
-      var box = procList.getBoundingClientRect();
-      var vh = window.innerHeight;
-      var passed = (vh * 0.62 - box.top) / box.height;
-      fill.style.transform = 'scaleY(' + Math.max(0, Math.min(1, passed)).toFixed(3) + ')';
-    });
-    syncRail();
-    window.addEventListener('scroll', syncRail, { passive: true });
-    window.addEventListener('resize', syncRail, { passive: true });
+    /* Раньше линия заполнялась по мере прокрутки, а активная строка
+       определялась через IntersectionObserver. Теперь весь блок —
+       один экран целиком, поэтому при входе на него линия просто
+       проходит путь целиком, а строки подсвечиваются друг за другом
+       с небольшой задержкой — тот же «репортаж», но по времени. */
+    processAPI = {
+      enter: function () {
+        fill.style.transition = 'none';
+        fill.style.transform = 'scaleY(0)';
+        rows.forEach(function (r) { r.classList.remove('active'); });
+        void rail.offsetHeight;
+        fill.style.transition = 'transform 1.05s var(--ease)';
+        fill.style.transform = 'scaleY(1)';
+        rows.forEach(function (r, i) {
+          window.setTimeout(function () { r.classList.add('active'); }, 160 + i * 190);
+        });
+      }
+    };
   }
 
   /* ---------- 14. О СТУДИИ ---------- */
@@ -633,25 +654,25 @@
     renderStep();
   }
 
-  /* ---------- 17. ПОЯВЛЕНИЕ ПРИ СКРОЛЛЕ ---------- */
-  if (!reduced.matches && 'IntersectionObserver' in window) {
-    var targets = $$('.sec, .srow, .prow, .about__grid > *, .brief__box, .contact__top, .ways li');
-    var vh = window.innerHeight;
-    var revealObs = new IntersectionObserver(function (entries) {
-      entries.forEach(function (en) {
-        if (en.isIntersecting) { en.target.classList.add('in'); revealObs.unobserve(en.target); }
-      });
-    }, { rootMargin: '0px 0px -8% 0px', threshold: 0.04 });
-
+  /* ---------- 17. ПОЯВЛЕНИЕ ПРИ ВХОДЕ НА ЭКРАН ----------
+     Раньше содержимое проявлялось по мере прокрутки мимо него
+     (IntersectionObserver). Теперь раздел появляется на экране
+     целиком и сразу — вместе с ним, с лёгким веерным сдвигом,
+     проявляются и его внутренние блоки. Вызывается кино-навигацией
+     (раздел 23) в момент, когда очередной слайд становится активным. */
+  function revealWithin(root) {
+    if (!root) return;
+    var targets = $$('.sec, .srow, .prow, .about__grid > *, .brief__box, .contact__top, .ways li', root);
     targets.forEach(function (t, i) {
-      if (t.getBoundingClientRect().top < vh * 0.94) return;
       t.classList.add('js-reveal');
-      t.style.transitionDelay = ((i % 4) * 0.05) + 's';
-      revealObs.observe(t);
+      if (!t.style.transitionDelay) t.style.transitionDelay = ((i % 4) * 0.06) + 's';
     });
-    window.setTimeout(function () {
-      $$('.js-reveal').forEach(function (t) { t.classList.add('in'); });
-    }, 4000);
+    if (reduced.matches) { targets.forEach(function (t) { t.classList.add('in'); }); return; }
+    window.requestAnimationFrame(function () {
+      window.requestAnimationFrame(function () {
+        targets.forEach(function (t) { t.classList.add('in'); });
+      });
+    });
   }
 
   /* ---------- 18. МЯГКИЙ ПАРАЛЛАКС ПЕРВОГО ЭКРАНА ----------
@@ -715,23 +736,21 @@
     });
   })();
 
-  /* ---------- 20. ИНДИКАТОР ПРОКРУТКИ ---------- */
+  /* ---------- 20. ИНДИКАТОР ПРОКРУТКИ ----------
+     Раньше полоса вела себя по скроллу документа (нативным
+     animation-timeline там, где он есть, иначе — слушателем scroll).
+     Теперь страница не скроллится обычным образом, поэтому полосу
+     двигает кино-навигация — просто по номеру текущего слайда. */
   (function progress() {
     var bar = $('#progress i');
     if (!bar) return;
-    // современные браузеры ведут полосу средствами CSS (animation-timeline),
-    // слушатель нужен только там, где этого нет
-    try {
-      if (window.CSS && CSS.supports && CSS.supports('animation-timeline: scroll()')) return;
-    } catch (e) {}
-    var sync = rafThrottle(function () {
-      var max = document.documentElement.scrollHeight - window.innerHeight;
-      var p = max > 0 ? window.scrollY / max : 0;
-      bar.style.transform = 'scaleX(' + Math.max(0, Math.min(1, p)).toFixed(4) + ')';
-    });
-    sync();
-    window.addEventListener('scroll', sync, { passive: true });
-    window.addEventListener('resize', sync, { passive: true });
+    bar.style.transition = 'transform .5s var(--ease)';
+    progressAPI = {
+      set: function (index, total) {
+        var p = total > 1 ? index / (total - 1) : 0;
+        bar.style.transform = 'scaleX(' + Math.max(0, Math.min(1, p)).toFixed(4) + ')';
+      }
+    };
   })();
 
   /* ---------- 21. ВИТРИНА ПРОЕКТОВ ----------
@@ -848,8 +867,12 @@
     }
     function nextProject() { loadProject(current + 1, 1); }
     function previousProject() { loadProject(current - 1, -1); }
-    nextBtn.addEventListener('click', nextProject);
-    prevBtn.addEventListener('click', previousProject);
+    nextBtn.addEventListener('click', function () {
+      if (window.__cine) window.__cine.stepProject(1); else nextProject();
+    });
+    prevBtn.addEventListener('click', function () {
+      if (window.__cine) window.__cine.stepProject(-1); else previousProject();
+    });
     wireMagnets(ui);
 
     /* ---- геометрия: карточки садятся в экраны устройств ---- */
@@ -964,38 +987,68 @@
       sec.classList.toggle('show--flat', on);
       if (noteEl) noteEl.textContent = (on ? cfg.noteFlat : cfg.note) || '';
       if (on) {
-        sec.style.height = '';
         unlayout();
         plate.style.opacity = '';
         ['--lead-o', '--ui-o'].forEach(function (v) { sec.style.setProperty(v, '1'); });
         sec.style.setProperty('--pool-o', '0');
       } else {
-        sec.style.height = (cfg.height || 220) + 'vh';
         layout();
       }
     }
     function relayout() {
       var flat = isFlat();
       toFlat(flat);
-      if (!flat && measure()) initScrollProgress();
+      if (!flat) { measure(); updateShowcase(sec.dataset.state === 'stage' ? 1 : 0); }
     }
-
-    document.addEventListener('keydown', function (e) {
-      if (sec.dataset.state !== 'stage' && !sec.classList.contains('show--flat')) return;
-      if (document.activeElement && document.activeElement.closest('input, textarea')) return;
-      var box = sec.getBoundingClientRect();
-      if (box.bottom < 0 || box.top > window.innerHeight) return;
-      if (e.key === 'ArrowRight') { nextProject(); e.preventDefault(); }
-      else if (e.key === 'ArrowLeft') { previousProject(); e.preventDefault(); }
-    });
 
     loadProject(0, 0);
     relayout();
     initDeviceParallax();
-    window.addEventListener('scroll', initScrollProgress, { passive: true });
     window.addEventListener('resize', rafThrottle(relayout), { passive: true });
     if (flatQuery.addEventListener) flatQuery.addEventListener('change', relayout);
     if (reduced.addEventListener) reduced.addEventListener('change', relayout);
+
+    /* ---- API для кино-навигации (раздел 23) ----
+       Раньше «наезд» устройств тянулся за прокруткой большой (220vh)
+       секции. Теперь секция — один экран, а наезд проигрывается целиком
+       за фиксированное время при входе на неё; между проектами внутри
+       витрины (KEMPO ⇄ NOIR TABLE ⇄ NORTH & CO.) устройства остаются
+       пристыкованными — меняется только содержимое экранов. */
+    var docked = false;
+    function tweenApproach(duration) {
+      return new Promise(function (resolve) {
+        if (isFlat()) { updateShowcase(1); docked = true; resolve(); return; }
+        measure();
+        updateShowcase(0);
+        var start = null;
+        function step(ts) {
+          if (!start) start = ts;
+          var p = Math.min(1, (ts - start) / duration);
+          updateShowcase(p);
+          if (p < 1) { window.requestAnimationFrame(step); }
+          else { docked = true; resolve(); }
+        }
+        window.requestAnimationFrame(step);
+      });
+    }
+    showcaseAPI = {
+      count: function () { return items.length; },
+      currentIndex: function () { return current; },
+      /* dir > 0 — входим из hero (начинаем с первого проекта),
+         dir < 0 — входим из «Услуг» назад (начинаем с последнего) */
+      enter: function (dir, duration) {
+        if (dir < 0) loadProject(items.length - 1, 0); else loadProject(0, 0);
+        docked = false;
+        return tweenApproach(duration || 1000);
+      },
+      redock: function () {
+        if (!isFlat()) { measure(); updateShowcase(1); }
+        docked = true;
+      },
+      isDocked: function () { return docked; },
+      next: function () { nextProject(); },
+      prev: function () { previousProject(); }
+    };
   })();
 
   /* ---------- 22. ФОН СТРАНИЦЫ ----------
@@ -1030,37 +1083,214 @@
 
     shaderField = window.ShaderField.mount(canvas, opts());
     if (!shaderField) { wrap.remove(); return; }
+    canvas.style.transition = 'opacity .7s var(--ease-soft)';
+    canvas.style.opacity = '0';
 
-    /* ---- прозрачность: плавно проявляется при входе в витрину, дальше держится до конца страницы ---- */
-    var syncOpacity = rafThrottle(function () {
-      var vh = window.innerHeight;
-      var top = stage.getBoundingClientRect().top;
-      var t = (vh - top) / (vh * 0.6);
-      canvas.style.opacity = (Math.max(0, Math.min(1, t)) * maxOpacity()).toFixed(3);
-    });
-    syncOpacity();
-    window.addEventListener('scroll', syncOpacity, { passive: true });
-    window.addEventListener('resize', syncOpacity, { passive: true });
-
-    /* ---- мягкий дрейф узора по секциям: канвас один на всю страницу,
-       меняется только «извод» рисунка, пока читаешь очередной блок ---- */
+    /* ---- прозрачность и «извод» узора теперь по текущему слайду ----
+       Раньше оба параметра читались из scrollY/IntersectionObserver;
+       кино-навигация (раздел 23) знает текущий экран точнее и вызывает
+       эти функции сама в нужный момент. */
     var variants = $$('#showcase, #services, #process, #about, #brief, #contact');
-    if (variants.length && 'IntersectionObserver' in window) {
-      var vObs = new IntersectionObserver(function (entries) {
-        entries.forEach(function (en) {
-          if (en.isIntersecting) shaderField.setVariant(variants.indexOf(en.target));
-        });
-      }, { rootMargin: '-45% 0px -45% 0px' });
-      variants.forEach(function (el) { vObs.observe(el); });
-    }
+    shaderAPI = {
+      show: function (on) { canvas.style.opacity = on ? String(maxOpacity()) : '0'; },
+      setSection: function (id) {
+        var el = document.getElementById(id);
+        var i = el ? variants.indexOf(el) : -1;
+        if (i >= 0) shaderField.setVariant(i);
+      }
+    };
 
     /* ---- переход через брейкпоинт телефон/десктоп: пересобрать с другими настройками ---- */
     var onBreakpoint = function () {
+      var wasOn = canvas.style.opacity !== '0';
       shaderField.destroy();
       shaderField = window.ShaderField.mount(canvas, opts());
-      if (!shaderField) wrap.remove();
+      if (!shaderField) { wrap.remove(); return; }
+      canvas.style.opacity = wasOn ? String(maxOpacity()) : '0';
     };
     if (narrow.addEventListener) narrow.addEventListener('change', onBreakpoint);
+  })();
+
+  /* ---------- 23. КИНО-НАВИГАЦИЯ ----------
+     Страница — набор полноэкранных «слайдов» (.cine-slide в
+     styles.css): hero, три проекта витрины (KEMPO / NOIR TABLE /
+     NORTH & CO. считаются как три отдельных шага), услуги, подход,
+     о студии, заявка, контакты. Колесо мыши и свайп — не привязка к
+     пикселям прокрутки, а триггер целого перехода; пока идёт
+     переход, новые жесты игнорируются (isAnimating). */
+  (function cinema() {
+    var stage = $$('.cine-slide');
+    if (!stage.length) return;
+
+    var DURATION = 950;   // мс — в пределах 800–1200 из ТЗ
+    var OFFSET = 40;       // px — translateY на входе/выходе
+    var TR = 'opacity ' + DURATION + 'ms var(--ease), transform ' + DURATION +
+      'ms var(--ease), filter ' + DURATION + 'ms var(--ease)';
+
+    /* ---- плоский список шагов: витрина занимает три шага подряд ---- */
+    var steps = [];
+    stage.forEach(function (el) {
+      var span = Number(el.getAttribute('data-slide-span')) || 1;
+      var sectionId = el.getAttribute('data-section') || el.id;
+      for (var i = 0; i < span; i++) steps.push({ el: el, sub: i, span: span, sectionId: sectionId });
+    });
+    var total = steps.length;
+    var activeIndex = 0;
+    var isAnimating = false;
+
+    function setChrome(index) {
+      var s = steps[index];
+      if (navAPI) navAPI.setState(index === 0, s.sectionId);
+      if (progressAPI) progressAPI.set(index, total);
+      if (shaderAPI) {
+        if (index === 0) shaderAPI.show(false);
+        else { shaderAPI.show(true); shaderAPI.setSection(s.sectionId); }
+      }
+    }
+    function afterEnter(el, sectionId) {
+      revealWithin(el);
+      if (sectionId === 'process' && processAPI) processAPI.enter();
+    }
+
+    function transitionSlides(fromEl, toEl, dir, onDone) {
+      var sign = dir >= 0 ? 1 : -1;
+      [fromEl, toEl].forEach(function (el) {
+        el.classList.remove('is-active');
+        el.classList.add('is-transitioning');
+      });
+      toEl.style.zIndex = '3'; fromEl.style.zIndex = '2';
+      toEl.style.transition = 'none';
+      toEl.style.opacity = '0';
+      toEl.style.transform = 'translateY(' + (sign * OFFSET) + 'px)';
+      toEl.style.filter = 'blur(0px)';
+      void toEl.offsetHeight; // reflow — фиксируем стартовое состояние перед анимацией
+      fromEl.style.transition = TR;
+      fromEl.style.opacity = '.32';
+      fromEl.style.transform = 'translateY(' + (-sign * 26) + 'px)';
+      fromEl.style.filter = 'blur(7px)';
+      window.requestAnimationFrame(function () {
+        window.requestAnimationFrame(function () {
+          toEl.style.transition = TR;
+          toEl.style.opacity = '1';
+          toEl.style.transform = 'translateY(0)';
+          toEl.style.filter = 'blur(0px)';
+        });
+      });
+      window.setTimeout(function () {
+        fromEl.classList.remove('is-transitioning');
+        fromEl.style.cssText = '';
+        toEl.classList.remove('is-transitioning');
+        toEl.classList.add('is-active');
+        toEl.style.cssText = '';
+        if (onDone) onDone();
+      }, DURATION + 60);
+    }
+
+    function goTo(target) {
+      if (isAnimating) return;
+      target = Math.max(0, Math.min(total - 1, target));
+      if (target === activeIndex) return;
+      var dir = target > activeIndex ? 1 : -1;
+      var from = steps[activeIndex], to = steps[target];
+
+      if (from.el === to.el) {
+        // шаг внутри витрины: устройства остаются пристыкованными
+        isAnimating = true;
+        if (dir > 0) showcaseAPI.next(); else showcaseAPI.prev();
+        activeIndex = target;
+        setChrome(activeIndex);
+        window.setTimeout(function () { isAnimating = false; }, 360);
+        return;
+      }
+
+      isAnimating = true;
+      var enteringShowcase = to.el.classList.contains('show');
+      transitionSlides(from.el, to.el, dir, function () {
+        activeIndex = target;
+        setChrome(activeIndex);
+        afterEnter(to.el, to.sectionId);
+        isAnimating = false;
+      });
+      if (enteringShowcase && showcaseAPI) showcaseAPI.enter(dir, DURATION + 150);
+    }
+
+    function stepProject(delta) {
+      if (isAnimating) return;
+      var s = steps[activeIndex];
+      if (!s || s.span <= 1 || !showcaseAPI) return;
+      isAnimating = true;
+      if (delta > 0) showcaseAPI.next(); else showcaseAPI.prev();
+      var count = showcaseAPI.count();
+      var nextSub = ((s.sub + delta) % count + count) % count;
+      var target = steps.findIndex(function (st) { return st.el === s.el && st.sub === nextSub; });
+      if (target >= 0) activeIndex = target;
+      setChrome(activeIndex);
+      window.setTimeout(function () { isAnimating = false; }, 360);
+    }
+
+    function goToSection(id) {
+      if (id === 'showcase' && showcaseAPI) {
+        var sub = showcaseAPI.currentIndex();
+        var idx = steps.findIndex(function (s) { return s.sectionId === 'showcase' && s.sub === sub; });
+        goTo(idx >= 0 ? idx : 1);
+        return;
+      }
+      var idx2 = steps.findIndex(function (s) { return s.sectionId === id; });
+      if (idx2 >= 0) goTo(idx2);
+    }
+
+    /* ---- ввод: колесо, свайп, клавиатура ---- */
+    function onWheel(e) {
+      if (e.target.closest && e.target.closest('textarea')) return;
+      if (isAnimating) { e.preventDefault(); return; }
+      if (Math.abs(e.deltaY) < 4) return;
+      e.preventDefault();
+      goTo(activeIndex + (e.deltaY > 0 ? 1 : -1));
+    }
+    window.addEventListener('wheel', onWheel, { passive: false });
+
+    var touchY = null, touchSkip = false;
+    window.addEventListener('touchstart', function (e) {
+      var t = e.target;
+      touchSkip = !!(t.closest && t.closest('textarea, .brief__side'));
+      touchY = (!touchSkip && e.touches.length) ? e.touches[0].clientY : null;
+    }, { passive: true });
+    window.addEventListener('touchmove', function (e) {
+      if (!touchSkip && touchY != null) e.preventDefault();
+    }, { passive: false });
+    window.addEventListener('touchend', function (e) {
+      if (touchSkip || touchY == null || isAnimating) { touchY = null; return; }
+      var end = (e.changedTouches[0] || {}).clientY;
+      var start = touchY; touchY = null;
+      if (end == null) return;
+      var dy = start - end;
+      if (Math.abs(dy) < 48) return;
+      goTo(activeIndex + (dy > 0 ? 1 : -1));
+    }, { passive: true });
+
+    document.addEventListener('keydown', function (e) {
+      var ae = document.activeElement;
+      if (ae && ae.closest && ae.closest('input, textarea, select, [contenteditable]')) return;
+      if (e.key === 'ArrowDown' || e.key === 'PageDown' || e.key === ' ') { goTo(activeIndex + 1); e.preventDefault(); }
+      else if (e.key === 'ArrowUp' || e.key === 'PageUp') { goTo(activeIndex - 1); e.preventDefault(); }
+      else if (e.key === 'ArrowRight') { stepProject(1); }
+      else if (e.key === 'ArrowLeft') { stepProject(-1); }
+    });
+
+    // клики по любым внутренним якорям (#showcase, #brief …) — тот же переход
+    document.addEventListener('click', function (e) {
+      if (e.defaultPrevented) return;
+      var a = e.target.closest && e.target.closest('a[href^="#"]');
+      if (!a) return;
+      var id = a.getAttribute('href').slice(1);
+      if (!id || !steps.some(function (s) { return s.sectionId === id; })) return;
+      e.preventDefault();
+      goToSection(id);
+    });
+
+    document.documentElement.classList.add('cine-on');
+    setChrome(0);
+    window.__cine = { goTo: goTo, goToSection: goToSection, stepProject: stepProject };
   })();
 
   /* ---------- ЗАПУСК ---------- */

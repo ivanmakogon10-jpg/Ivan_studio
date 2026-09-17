@@ -48,7 +48,7 @@
 <main id="main">
 
   <!-- HERO -->
-  <section class="hero" id="top">
+  <section class="hero cine-slide is-active" id="top">
     <canvas class="hero__field" id="heroField" aria-hidden="true"></canvas>
     <div class="hero__decor" aria-hidden="true">
       <span class="hero__glow"></span>
@@ -82,7 +82,7 @@
   <div class="stage-dark" id="stageDark">
 
   <!-- ВИТРИНА ПРОЕКТОВ — устройства приближаются, карточки листаются -->
-  <section class="show" id="showcase" aria-labelledby="showTitle">
+  <section class="show cine-slide" id="showcase" data-slide-span="3" aria-labelledby="showTitle">
     <div class="show__sticky">
 
       <div class="show__lead" id="showLead">
@@ -129,7 +129,7 @@
   </section>
 
   <!-- SERVICES -->
-  <section class="band services" id="services" aria-labelledby="svcTitle">
+  <section class="band services cine-slide" id="services" aria-labelledby="svcTitle">
     <div class="shell">
       <header class="sec">
         <p class="lab mono">Services</p>
@@ -142,7 +142,7 @@
   </section>
 
   <!-- PROCESS -->
-  <section class="band process" id="process" aria-labelledby="procTitle">
+  <section class="band process cine-slide" id="process" aria-labelledby="procTitle">
     <div class="shell">
       <header class="sec">
         <p class="lab mono">How I work</p>
@@ -154,7 +154,7 @@
   </section>
 
   <!-- ABOUT -->
-  <section class="band about" id="about" aria-labelledby="aboutTitle">
+  <section class="band about cine-slide" id="about" aria-labelledby="aboutTitle">
     <div class="shell">
       <header class="sec">
         <p class="lab mono">About</p>
@@ -165,7 +165,7 @@
   </section>
 
   <!-- BRIEF -->
-  <section class="band brief" id="brief" aria-labelledby="briefTitle">
+  <section class="band brief cine-slide" id="brief" aria-labelledby="briefTitle">
     <div class="shell">
       <header class="sec">
         <p class="lab mono">Brief</p>
@@ -180,6 +180,7 @@
   </section>
 
   <!-- CONTACT -->
+  <div class="cine-slide" data-section="contact">
   <section class="band contact" id="contact" aria-labelledby="contactTitle">
     <div class="shell">
       <div class="contact__top">
@@ -239,6 +240,7 @@
       <span>© <span id="year">2026</span></span>
     </div>
   </footer>
+  </div><!-- /.cine-slide contact -->
 
   </div><!-- /.stage-dark -->
 </main>

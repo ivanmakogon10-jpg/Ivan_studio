@@ -79,50 +79,43 @@ build.py     пересборка: python3 build.py
 
 ## Приём заявок
 
-Сейчас backend не подключён, и форма об этом честно сообщает:
-«Форма пока находится в режиме предварительной настройки» плюс прямые контакты.
-Ответы при этом сохраняются в localStorage браузера посетителя
-(ключ `ivan-briefs`) — но до вас они не доходят.
+Обработчик уже в репозитории: `api/brief.js` — serverless-функция,
+пересылает заявку с формы в Telegram. `data.js` указывает на неё через
+`BRIEF_ENDPOINT = '/api/brief'`. Пока сайт не задеплоен туда, где эта
+функция реально выполняется (Vercel), форма честно предупреждает:
+«Форма пока находится в режиме предварительной настройки» — и
+предлагает написать напрямую. Ответы при этом сохраняются в
+localStorage браузера посетителя (ключ `ivan-brief-draft`), но до вас
+не доходят.
 
-Чтобы заявки приходили:
+### Как подключить (Vercel + Telegram-бот)
 
-1. Поднимите обработчик, принимающий POST с JSON. Подойдёт serverless-функция
-   Vercel / Netlify / Cloudflare Workers, Yandex Cloud Function или свой скрипт.
-2. Внутри обработчика отправляйте данные куда нужно — в Telegram, на почту, в CRM.
-3. Впишите его адрес в `BRIEF_ENDPOINT` в конце `data.js`.
-
-После этого форма покажет «Заявка отправлена» только при реальном ответе сервера.
+1. **Создайте Telegram-бота.** В Telegram откройте @BotFather →
+   `/newbot` → задайте имя. BotFather выдаст токен вида
+   `123456789:AA...` — это `TG_TOKEN`.
+2. **Узнайте свой chat_id.** Напишите новому боту любое сообщение
+   (например «привет»), затем откройте в браузере
+   `https://api.telegram.org/bot<TG_TOKEN>/getUpdates` (вместо
+   `<TG_TOKEN>` — токен из шага 1) и найдите в ответе
+   `"chat":{"id":...}` — это число и есть `TG_CHAT`.
+3. **Задеплойте репозиторий на Vercel.** vercel.com → войти через
+   GitHub → Add New Project → выбрать репозиторий `Ivan_studio`.
+   В настройках сборки: Framework Preset — Other, Build Command —
+   `python3 build.py`, Output Directory — `standalone`.
+4. **Добавьте переменные окружения.** В Project Settings →
+   Environment Variables добавить `TG_TOKEN` и `TG_CHAT` со
+   значениями из шагов 1–2. Deploy.
+5. После деплоя форма на сайте будет реально доставлять заявки в
+   Telegram; «Заявка отправлена» покажется только при успешном ответе
+   сервера.
 
 ### Безопасность
 
-**Токен Telegram-бота и любые другие ключи нельзя класть в `data.js`, `app.js`
-или HTML.** Этот код отдаётся браузеру как есть, и любой посетитель увидит ключ,
-сможет читать чужие сообщения бота и писать от его имени. Секреты живут только
-на серверной стороне — в переменных окружения хостинга или serverless-функции.
-
-Минимальный пример обработчика (Vercel / Netlify, файл `api/brief.js`):
-
-```js
-export default async function handler(req, res) {
-  if (req.method !== 'POST') return res.status(405).end();
-  const text = Object.entries(req.body)
-    .filter(([, v]) => v)
-    .map(([k, v]) => `${k}: ${v}`)
-    .join('\n');
-  const r = await fetch(
-    `https://api.telegram.org/bot${process.env.TG_TOKEN}/sendMessage`,
-    {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ chat_id: process.env.TG_CHAT, text })
-    }
-  );
-  if (!r.ok) return res.status(502).json({ ok: false });
-  res.status(200).json({ ok: true });
-}
-```
-
-`TG_TOKEN` и `TG_CHAT` задаются в настройках хостинга, а не в коде.
+**Токен Telegram-бота и любые другие ключи нельзя класть в `data.js`,
+`app.js` или HTML.** Этот код отдаётся браузеру как есть, и любой
+посетитель увидит ключ, сможет читать чужие сообщения бота и писать
+от его имени. Секреты живут только на серверной стороне — в
+переменных окружения Vercel, `api/brief.js` их оттуда и читает.
 
 ## Цены и расчёт
 

@@ -6,9 +6,9 @@
 
 /* ---------- 0. САЙТ ---------- */
 const SITE = {
-  title: 'Ivan Studio — Web Design & Development',
+  title: 'Ivan Studio — веб-дизайн и разработка',
   shortTitle: 'Ivan Studio',
-  description: 'Иван Studio — дизайн и разработка сайтов под ключ. UX/UI, digital design и современные веб-интерфейсы.',
+  description: 'Ivan Studio — дизайн и разработка сайтов под ключ. UX/UI, цифровой дизайн и современные веб-интерфейсы.',
   // Укажите домен после публикации — тогда добавятся canonical и og:url.
   url: '',
   // Картинка для превью в мессенджерах и соцсетях, 1200×630.
@@ -21,7 +21,7 @@ const SITE = {
    heroProject — id проекта для счётчика «01 / 03» под заголовком.
 */
 const HERO = {
-  eyebrow: 'Digital products',
+  eyebrow: 'Цифровые продукты',
   // Заголовок построчно. accent: true — строка светлее и тоньше.
   lines: [
     { text: 'Цифровые' },
@@ -114,9 +114,9 @@ const PROJECTS = [
     id: 'karate',
     number: '01',
     title: 'Кэмпо',
-    sector: 'Sport',
+    sector: 'Спорт',
     summary: 'Сайт клуба каратэ JKA в Донецке.',
-    categories: ['Web Design', 'Development'],
+    categories: ['Веб-дизайн', 'Разработка'],
     year: '',
     status: 'released',
     cover: 'arc',
@@ -131,7 +131,7 @@ const PROJECTS = [
     span: { col: 'span 12', ratio: '16 / 7' },
     // Живой сайт внутри showcase: путь относительный, works на GitHub Pages
     live: {
-      path: 'projects/kempo/index.html', label: 'KEMPO', meta: 'SPORT / WEB DESIGN',
+      path: 'projects/kempo/index.html', label: 'KEMPO', meta: 'Спорт / Веб-дизайн',
       card: 'Клуб каратэ JKA в Донецке: расписание, тренеры, запись на тренировку.',
       shot: 'assets/projects/kempo/kempo-desktop.jpg',
       mobile: 'assets/projects/mobile/kempo-mobile.jpg'
@@ -153,9 +153,9 @@ const PROJECTS = [
     id: 'restaurant',
     number: '02',
     title: 'NOIR TABLE',
-    sector: 'Restaurant',
+    sector: 'Ресторан',
     summary: 'Сайт камерного ресторана европейской кухни.',
-    categories: ['Web Design', 'UX/UI'],
+    categories: ['Веб-дизайн', 'UX/UI'],
     year: '',
     status: 'released',
     cover: 'menu',
@@ -166,7 +166,7 @@ const PROJECTS = [
     },
     span: { col: 'span 4', ratio: '4 / 3' },
     live: {
-      path: 'projects/noir-table/index.html', label: 'NOIR TABLE', meta: 'RESTAURANT / WEB DESIGN',
+      path: 'projects/noir-table/index.html', label: 'NOIR TABLE', meta: 'Ресторан / Веб-дизайн',
       card: 'Камерный ресторан: меню, фирменное блюдо, бронирование столика.',
       shot: 'assets/projects/noir-table/noir-desktop.jpg',
       mobile: 'assets/projects/mobile/noir-mobile.jpg'
@@ -185,9 +185,9 @@ const PROJECTS = [
     id: 'business-landing',
     number: '03',
     title: 'NORTH & CO.',
-    sector: 'Business',
+    sector: 'Бизнес',
     summary: 'Лендинг студии бизнес-решений.',
-    categories: ['Web Design', 'Development'],
+    categories: ['Веб-дизайн', 'Разработка'],
     year: '',
     status: 'released',
     cover: 'flow',
@@ -198,7 +198,7 @@ const PROJECTS = [
     },
     span: { col: 'span 4', ratio: '4 / 3' },
     live: {
-      path: 'projects/north-co/index.html', label: 'NORTH & CO.', meta: 'BUSINESS / WEB DESIGN',
+      path: 'projects/north-co/index.html', label: 'NORTH & CO.', meta: 'Бизнес / Веб-дизайн',
       card: 'Лендинг студии бизнес-решений: услуги, процесс, заявка.',
       shot: 'assets/projects/north-co/north-desktop.jpg',
       mobile: 'assets/projects/mobile/north-mobile.jpg'
@@ -224,7 +224,7 @@ const PROJECTS = [
 const CONCEPTS = [
   {
     id: 'aura', number: '04', title: 'AURA',
-    summary: '', categories: ['Concept project'], year: '',
+    summary: '', categories: ['Концепт-проект'], year: '',
     status: 'soon', cover: 'ghost', letter: 'A',
     media: { preview: null, desktop: null, mobile: null, gallery: [] },
     span: { col: 'span 4', ratio: '4 / 3' },
@@ -232,7 +232,7 @@ const CONCEPTS = [
   },
   {
     id: 'mono', number: '05', title: 'MONO',
-    summary: '', categories: ['Concept project'], year: '',
+    summary: '', categories: ['Концепт-проект'], year: '',
     status: 'soon', cover: 'ghost', letter: 'M',
     media: { preview: null, desktop: null, mobile: null, gallery: [] },
     span: { col: 'span 4', ratio: '4 / 3' },
@@ -240,7 +240,7 @@ const CONCEPTS = [
   },
   {
     id: 'pulse', number: '06', title: 'PULSE',
-    summary: '', categories: ['Concept project'], year: '',
+    summary: '', categories: ['Концепт-проект'], year: '',
     status: 'soon', cover: 'ghost', letter: 'P',
     media: { preview: null, desktop: null, mobile: null, gallery: [] },
     span: { col: 'span 4', ratio: '4 / 3' },
@@ -253,29 +253,29 @@ const APPROACH = [
   {
     number: '01',
     title: 'Исследование',
-    label: 'DISCOVER',
+    label: 'ИССЛЕДОВАНИЕ',
     text: 'Понимание задачи, аудитории и контекста.',
     detail: 'Смотрю, чем живёт ниша, что делают соседи по рынку и какой сценарий приводит человека на сайт.'
   },
   {
     number: '02',
     title: 'Структура',
-    label: 'STRUCTURE',
+    label: 'СТРУКТУРА',
     text: 'Информационная архитектура и логика взаимодействия.',
     detail: 'Порядок блоков, глубина разделов, точки принятия решения. Сетка появляется раньше картинки.'
   },
   {
     number: '03',
     title: 'Интерфейс',
-    label: 'INTERFACE',
+    label: 'ИНТЕРФЕЙС',
     text: 'Визуальная система, типографика и UI.',
     detail: 'Шкала размеров, токены цвета, состояния элементов. Одна система вместо набора экранов.'
   },
   {
     number: '04',
     title: 'Движение',
-    label: 'MOTION',
-    text: 'Micro-interactions и motion, которые помогают интерфейсу.',
+    label: 'ДВИЖЕНИЕ',
+    text: 'Микровзаимодействия и анимация, которые помогают интерфейсу.',
     detail: 'Анимация отвечает на действие и подсказывает, что произошло. Всё лишнее выключается.'
   }
 ];
@@ -284,7 +284,7 @@ const APPROACH = [
    portrait: путь к фотографии. null — показывается место под фото.
 */
 const ABOUT = {
-  label: 'Digital Design',
+  label: 'Цифровой дизайн',
   lead: 'Ivan Studio — независимая студия. За каждым проектом один человек, который делает и дизайн, и разработку.',
   text: 'Создаю цифровые продукты: сайты, интерфейсы и визуальные системы, которые работают на задачу и на людей.',
   how: 'Вы работаете напрямую с исполнителем. Без менеджеров между вами и макетом, без потерь смысла на переходе от дизайна к вёрстке — все вопросы решаются в одном чате.',
@@ -297,9 +297,9 @@ const ABOUT = {
   ],
   kicker: 'Делать продукты, которыми хочется пользоваться.',
   meta: [
-    { k: 'FOCUS',    v: 'Web Design / Development' },
-    { k: 'SERVICES', v: 'Сайты под ключ, UX/UI' },
-    { k: 'YEAR',     v: '2026' }
+    { k: 'НАПРАВЛЕНИЕ', v: 'Веб-дизайн / Разработка' },
+    { k: 'УСЛУГИ',      v: 'Сайты под ключ, UX/UI' },
+    { k: 'ГОД',         v: '2026' }
   ]
 };
 
@@ -307,35 +307,35 @@ const ABOUT = {
 const SERVICES = [
   {
     id: 'landing',
-    label: 'LANDING PAGE',
-    title: 'Landing page',
+    label: 'ЛЕНДИНГ',
+    title: 'Лендинг',
     price: 25000,
     scope: 'Одна страница, один сценарий: первый экран, аргументы, форма.'
   },
   {
     id: 'corporate',
-    label: 'BUSINESS WEBSITE',
+    label: 'КОРПОРАТИВНЫЙ САЙТ',
     title: 'Корпоративный сайт',
     price: 45000,
     scope: 'Многостраничная структура, разделы, каталог услуг, редактируемый контент.'
   },
   {
     id: 'shop',
-    label: 'ONLINE STORE',
+    label: 'ИНТЕРНЕТ-МАГАЗИН',
     title: 'Интернет-магазин',
     price: 65000,
     scope: 'Каталог, карточка товара, корзина, оформление заказа.'
   },
   {
     id: 'turnkey',
-    label: 'FULL BUILD',
+    label: 'САЙТ ПОД КЛЮЧ',
     title: 'Сайт под ключ',
     price: 50000,
     scope: 'Дизайн, вёрстка, сборка, домен и публикация — одним процессом.'
   },
   {
     id: 'uxui',
-    label: 'UX/UI DESIGN',
+    label: 'UX/UI ДИЗАЙН',
     title: 'UX/UI дизайн',
     price: 20000,
     scope: 'Структура, прототип, интерфейс и макеты под передачу в разработку.'
@@ -418,7 +418,7 @@ const BRIEF_STEPS = [
     short: 'Что нужно создать?',
     question: 'Что нужно создать?',
     type: 'choice',
-    options: ['Landing', 'Корпоративный сайт', 'Интернет-магазин', 'Digital product', 'Другое']
+    options: ['Лендинг', 'Корпоративный сайт', 'Интернет-магазин', 'Цифровой продукт', 'Другое']
   },
   {
     id: 'work',
@@ -451,12 +451,19 @@ const BRIEF_STEPS = [
     question: 'Как с вами связаться?',
     type: 'contact',
     fields: [
-      { id: 'name',     label: 'Имя',      type: 'text',  autocomplete: 'name',  required: true },
+      { id: 'name', label: 'Имя', type: 'text', autocomplete: 'name', required: true }
+    ],
+    /* Раньше здесь было 3 отдельных поля (Telegram/Телефон/Email), которые
+       нужно было заполнять по очереди. Теперь один способ связи выбирается
+       ярлыком-переключателем (см. renderStep() в app.js), и значение
+       вводится в одно поле #f-contact, у которого меняются type/placeholder
+       в зависимости от выбранного способа. */
+    contactMethods: [
       { id: 'telegram', label: 'Telegram', type: 'text',  autocomplete: 'off',   placeholder: '@username' },
       { id: 'phone',    label: 'Телефон',  type: 'tel',   autocomplete: 'tel',   placeholder: '+7 900 000-00-00' },
-      { id: 'email',    label: 'Email',    type: 'email', autocomplete: 'email', placeholder: 'you@mail.ru' }
+      { id: 'email',    label: 'Почта',    type: 'email', autocomplete: 'email', placeholder: 'you@mail.ru' }
     ],
-    hint: 'Достаточно одного способа связи — выберите удобный.'
+    hint: 'Выберите способ связи и оставьте контакт.'
   },
   {
     id: 'about',

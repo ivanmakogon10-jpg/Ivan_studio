@@ -40,6 +40,12 @@
   var particleField = null;   // поле частиц первого экрана, см. раздел 19
   var shaderField = null;     // фон-нити на весь сайт от витрины до подвала, см. раздел 22
 
+  /* Единая длительность и кривая для ВСЕХ анимаций входа/выхода слайда
+     (сам слайд, фон-шейдер, линия прогресса, появление текста) — общий
+     таймлайн вместо набора анимаций с разным easing/duration, см. раздел 23. */
+  var CINE_DURATION = 950;   // мс — в пределах 800–1200 из ТЗ
+  var CINE_EASE = 'var(--ease)';
+
   /* Маленькие API, которые собирают себе разделы навигации (7), подхода
      (13), витрины (21) и фона (22) — раньше эти разделы сами слушали
      скролл, теперь ими управляет раздел 23 (кино-навигация), поэтому
@@ -376,9 +382,38 @@
   }
   function stepDone(s) {
     if (s.type === 'choice') return !!answers[s.id];
-    if (s.type === 'contact') return !!(answers.name || answers.telegram || answers.phone || answers.email);
+    if (s.type === 'contact') return !!(answers.name || answers.contactValue);
     return !!answers.about;
   }
+
+  // Способ связи (Telegram/Телефон/Почта) выбранный сейчас — один на всю
+  // заявку, хранится в answers.contactMethod, значение — в answers.contactValue.
+  function currentContactMethod(s) {
+    var methods = s.contactMethods;
+    var id = answers.contactMethod || methods[0].id;
+    var found = methods.filter(function (m) { return m.id === id; })[0];
+    return found || methods[0];
+  }
+
+  // Дропдаун способа связи закрывается по клику вне него — один слушатель
+  // на document (а не внутри renderStep, чтобы не плодить копии на каждый
+  // рендер шага).
+  document.addEventListener('click', function (e) {
+    var dd = $('#contactMethodDD');
+    if (!dd || dd.hidden) return;
+    var btn = $('#contactMethodBtn');
+    if (dd.contains(e.target) || e.target === btn) return;
+    dd.hidden = true;
+    if (btn) btn.setAttribute('aria-expanded', 'false');
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key !== 'Escape') return;
+    var dd = $('#contactMethodDD');
+    if (!dd || dd.hidden) return;
+    dd.hidden = true;
+    var btn = $('#contactMethodBtn');
+    if (btn) { btn.setAttribute('aria-expanded', 'false'); btn.focus(); }
+  });
 
   function renderTicks() {
     briefTicks.innerHTML = BRIEF_STEPS.map(function (s, i) {
@@ -412,14 +447,31 @@
             '<span>' + esc(o) + '</span></label>';
         }).join('') + '</div></fieldset>';
     } else if (s.type === 'contact') {
-      body = '<div class="grid2">' + s.fields.map(function (f) {
-        return '<div class="field" data-field="' + f.id + '">' +
-          '<label class="mono" for="f-' + f.id + '">' + esc(f.label) + (f.required ? ' *' : '') + '</label>' +
-          '<input id="f-' + f.id + '" name="' + f.id + '" type="' + f.type + '" autocomplete="' + f.autocomplete +
-          '" value="' + esc(answers[f.id] || '') + '" placeholder="' + esc(f.placeholder || '') + '"' +
-          (f.required ? ' aria-required="true"' : '') + '>' +
-          '<span class="err" id="err-' + f.id + '"></span></div>';
-      }).join('') + '</div>';
+      var nameField = s.fields[0];
+      var curMethod = currentContactMethod(s);
+      body = '<div class="grid2">' +
+        '<div class="field" data-field="' + nameField.id + '">' +
+          '<label class="mono" for="f-' + nameField.id + '">' + esc(nameField.label) + (nameField.required ? ' *' : '') + '</label>' +
+          '<input id="f-' + nameField.id + '" name="' + nameField.id + '" type="' + nameField.type + '" autocomplete="' + nameField.autocomplete +
+          '" value="' + esc(answers[nameField.id] || '') + '"' + (nameField.required ? ' aria-required="true"' : '') + '>' +
+          '<span class="err" id="err-' + nameField.id + '"></span></div>' +
+        '<div class="field field--contact" data-field="contact">' +
+          '<div class="method-pick">' +
+            '<button type="button" class="method-pick__btn mono" id="contactMethodBtn" aria-haspopup="listbox" aria-expanded="false">' +
+              '<span id="contactMethodLabel">' + esc(curMethod.label) + '</span>' +
+              '<svg class="method-pick__arr" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>' +
+            '</button>' +
+            '<div class="method-pick__dd" id="contactMethodDD" role="listbox" hidden>' +
+              s.contactMethods.map(function (m) {
+                return '<button type="button" class="method-pick__opt' + (m.id === curMethod.id ? ' is-active' : '') + '" role="option" ' +
+                  'aria-selected="' + (m.id === curMethod.id ? 'true' : 'false') + '" data-method="' + m.id + '">' + esc(m.label) + '</button>';
+              }).join('') +
+            '</div>' +
+          '</div>' +
+          '<input id="f-contact" name="contactValue" type="' + curMethod.type + '" autocomplete="' + curMethod.autocomplete +
+          '" value="' + esc(answers.contactValue || '') + '" placeholder="' + esc(curMethod.placeholder || '') + '">' +
+          '<span class="err" id="err-contact"></span></div>' +
+      '</div>';
     } else {
       body = '<div class="field"><label class="vh" for="f-about">Описание проекта</label>' +
         '<textarea id="f-about" name="about" placeholder="' + esc(s.placeholder) + '">' + esc(answers.about || '') + '</textarea></div>';
@@ -470,6 +522,54 @@
       });
     });
 
+    var methodBtn = $('#contactMethodBtn');
+    if (methodBtn) {
+      var methodDD = $('#contactMethodDD');
+      methodBtn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        var willOpen = methodDD.hidden;
+        methodDD.hidden = !willOpen;
+        methodBtn.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+      });
+      $$('.method-pick__opt', methodDD).forEach(function (opt) {
+        opt.addEventListener('click', function (e) {
+          e.stopPropagation();
+          var s2 = BRIEF_STEPS[stepIndex];
+          var methodId = opt.getAttribute('data-method');
+          var prevId = currentContactMethod(s2).id;
+          if (methodId !== prevId) answers.contactValue = ''; // разные форматы — не переносим значение между способами
+          answers.contactMethod = methodId;
+          saveDraft();
+
+          var cur = currentContactMethod(s2);
+          var label = $('#contactMethodLabel');
+          if (label) label.textContent = cur.label;
+          var input = $('#f-contact');
+          if (input) {
+            input.type = cur.type;
+            input.autocomplete = cur.autocomplete;
+            input.placeholder = cur.placeholder || '';
+            input.value = answers.contactValue || '';
+          }
+          $$('.method-pick__opt', methodDD).forEach(function (o) {
+            var active = o.getAttribute('data-method') === methodId;
+            o.classList.toggle('is-active', active);
+            o.setAttribute('aria-selected', active ? 'true' : 'false');
+          });
+          methodDD.hidden = true;
+          methodBtn.setAttribute('aria-expanded', 'false');
+
+          var wrap = briefMain.querySelector('[data-field="contact"]');
+          if (wrap) {
+            wrap.classList.remove('bad');
+            var errEl = $('.err', wrap);
+            if (errEl) errEl.textContent = '';
+          }
+          if (input) input.focus();
+        });
+      });
+    }
+
     var back = $('#briefBack');
     if (back) back.addEventListener('click', function () { stepIndex--; renderStep(); });
     $('#briefNext').addEventListener('click', onNext);
@@ -504,22 +604,22 @@
     if (s.type === 'contact') {
       var ok = true;
       var name = (answers.name || '').trim();
-      var tg = (answers.telegram || '').trim();
-      var phone = (answers.phone || '').trim();
-      var mail = (answers.email || '').trim();
+      var method = currentContactMethod(s);
+      var val = (answers.contactValue || '').trim();
 
       if (name.length < 2) { fieldErr('name', 'Введите имя — как к вам обращаться.'); ok = false; }
-      if (mail && !/^[^\s@]+@[^\s@]+\.[A-Za-zА-Яа-я]{2,}$/.test(mail)) {
-        fieldErr('email', 'Проверьте адрес: нужен формат name@mail.ru'); ok = false;
+
+      if (!val) {
+        fieldErr('contact', method.id === 'telegram' ? 'Укажите Telegram — например, @username.'
+          : method.id === 'phone' ? 'Укажите номер телефона.' : 'Укажите email.');
+        ok = false;
+      } else if (method.id === 'email' && !/^[^\s@]+@[^\s@]+\.[A-Za-zА-Яа-я]{2,}$/.test(val)) {
+        fieldErr('contact', 'Проверьте адрес: нужен формат name@mail.ru'); ok = false;
+      } else if (method.id === 'phone' && val.replace(/\D/g, '').length < 10) {
+        fieldErr('contact', 'Номер слишком короткий — нужно минимум 10 цифр.'); ok = false;
       }
-      if (phone && phone.replace(/\D/g, '').length < 10) {
-        fieldErr('phone', 'Номер слишком короткий — нужно минимум 10 цифр.'); ok = false;
-      }
-      if (!tg && !phone && !mail) {
-        setErr('Оставьте хотя бы один способ связи: Telegram, телефон или email.'); ok = false;
-      } else if (!ok) {
-        setErr('Поправьте отмеченные поля — остальные ответы сохранены.');
-      }
+
+      if (!ok) setErr('Поправьте отмеченные поля — остальные ответы сохранены.');
       return ok;
     }
     return true;
@@ -567,15 +667,16 @@
     var btn = $('#briefNext');
     if (btn) { btn.textContent = 'Отправляем…'; btn.disabled = true; }
 
+    var contactStep = BRIEF_STEPS.filter(function (st) { return st.id === 'contact'; })[0];
+    var contactMethod = currentContactMethod(contactStep);
     var payload = {
       'Что создать': answers.product || '',
       'Что сделать': answers.work || '',
       'Бюджет': answers.budget || '',
       'Сроки': answers.timing || '',
       'Имя': answers.name || '',
-      'Telegram': answers.telegram || '',
-      'Телефон': answers.phone || '',
-      'Email': answers.email || '',
+      'Способ связи': contactMethod.label,
+      'Контакт': answers.contactValue || '',
       'О проекте': answers.about || ''
     };
 
@@ -603,20 +704,16 @@
     renderStep();
   }
 
-  // Клик по строке услуги: переносим выбор в заявку и открываем следующий незаполненный шаг
+  // Клик по строке услуги: переносим выбор в заявку и открываем форму с 1-го шага
+  // с уже выбранным вариантом — раньше это прыгало сразу на шаг 4.
+  var SERVICE_PRODUCT_MAP = {
+    landing: 'Лендинг', corporate: 'Корпоративный сайт', shop: 'Интернет-магазин',
+    uxui: 'Цифровой продукт', turnkey: 'Другое'
+  };
   function prefillFromService(s) {
     if (!briefForm || !s) return;
-    var productMap = {
-      landing: 'Landing', corporate: 'Корпоративный сайт', shop: 'Интернет-магазин',
-      uxui: 'Digital product', turnkey: 'Другое'
-    };
-    var workMap = { uxui: 'Только дизайн' };
-    answers.product = productMap[s.id] || 'Другое';
-    answers.work = workMap[s.id] || 'Дизайн + разработка';
-    answers.budget = s.price < 50000 ? '25–50 тыс. ₽'
-      : s.price < 100000 ? '50–100 тыс. ₽'
-      : s.price < 200000 ? '100–200 тыс. ₽' : '200 тыс. ₽+';
-    stepIndex = 3; // «Когда запуск?» — первый вопрос, ещё не отвеченный
+    answers.product = SERVICE_PRODUCT_MAP[s.id] || 'Другое';
+    stepIndex = 0;
     saveDraft();
     firstRender = true;
     renderStep();
@@ -1051,7 +1148,10 @@
 
     shaderField = window.ShaderField.mount(canvas, opts());
     if (!shaderField) { wrap.remove(); return; }
-    canvas.style.transition = 'opacity .7s var(--ease-soft)';
+    /* Та же длительность и та же кривая, что у перехода между слайдами
+       (раздел 23) — фон и контент теперь один таймлайн, а не две
+       независимые анимации с разным easing/длительностью. */
+    canvas.style.transition = 'opacity ' + CINE_DURATION + 'ms ' + CINE_EASE;
     canvas.style.opacity = '0';
 
     /* ---- прозрачность и «извод» узора теперь по текущему слайду ----
@@ -1090,10 +1190,14 @@
     var stage = $$('.cine-slide');
     if (!stage.length) return;
 
-    var DURATION = 950;   // мс — в пределах 800–1200 из ТЗ
+    var DURATION = CINE_DURATION;
     var OFFSET = 40;       // px — translateY на входе/выходе
-    var TR = 'opacity ' + DURATION + 'ms var(--ease), transform ' + DURATION +
-      'ms var(--ease), filter ' + DURATION + 'ms var(--ease)';
+    /* Только opacity и transform — они уходят на GPU-композитинг.
+       Раньше сюда же добавлялся filter: blur() на весь слайд, но
+       блюр целого экрана с текстом/картинками каждый переход — самая
+       тяжёлая часть анимации и источник рывков на слабых устройствах,
+       поэтому убран. */
+    var TR = 'opacity ' + DURATION + 'ms ' + CINE_EASE + ', transform ' + DURATION + 'ms ' + CINE_EASE;
 
     /* ---- плоский список шагов: витрина занимает три шага подряд ---- */
     var steps = [];
@@ -1130,18 +1234,15 @@
       toEl.style.transition = 'none';
       toEl.style.opacity = '0';
       toEl.style.transform = 'translateY(' + (sign * OFFSET) + 'px)';
-      toEl.style.filter = 'blur(0px)';
       void toEl.offsetHeight; // reflow — фиксируем стартовое состояние перед анимацией
       fromEl.style.transition = TR;
       fromEl.style.opacity = '.32';
       fromEl.style.transform = 'translateY(' + (-sign * 26) + 'px)';
-      fromEl.style.filter = 'blur(7px)';
       window.requestAnimationFrame(function () {
         window.requestAnimationFrame(function () {
           toEl.style.transition = TR;
           toEl.style.opacity = '1';
           toEl.style.transform = 'translateY(0)';
-          toEl.style.filter = 'blur(0px)';
         });
       });
       window.setTimeout(function () {
@@ -1173,10 +1274,18 @@
 
       isAnimating = true;
       var enteringShowcase = to.el.classList.contains('show');
+
+      /* Фон (шейдер), линия прогресса, состояние навигации и проявление
+         текста запускаются ОДНОВРЕМЕННО с переходом слайда, а не после
+         его завершения — раньше все они ждали onDone (через ~1с после
+         жеста), из-за чего сначала проигрывался переход самого слайда,
+         и только потом, вторым отдельным рывком, включался фон и текст.
+         Теперь это один общий таймлайн вместо двух последовательных. */
+      setChrome(target);
+      afterEnter(to.el, to.sectionId);
+
       transitionSlides(from.el, to.el, dir, function () {
         activeIndex = target;
-        setChrome(activeIndex);
-        afterEnter(to.el, to.sectionId);
         isAnimating = false;
       });
       if (enteringShowcase && showcaseAPI) showcaseAPI.enter(dir, DURATION + 150);
@@ -1220,7 +1329,7 @@
     var touchY = null, touchSkip = false;
     window.addEventListener('touchstart', function (e) {
       var t = e.target;
-      touchSkip = !!(t.closest && t.closest('textarea, .brief__side'));
+      touchSkip = !!(t.closest && t.closest('textarea, .brief__side, .stage-in'));
       touchY = (!touchSkip && e.touches.length) ? e.touches[0].clientY : null;
     }, { passive: true });
     window.addEventListener('touchmove', function (e) {

@@ -260,7 +260,7 @@ a { color: inherit; text-decoration: none; }
 .link-arrow .arr { transition: transform .4s var(--ease); }
 .link-arrow:hover .arr { transform: translate(4px, -1px); }
 
-.js-reveal { opacity: 0; transform: translateY(20px); transition: opacity .7s var(--ease-soft), transform .7s var(--ease); }
+.js-reveal { opacity: 0; transform: translateY(20px); transition: opacity .7s var(--ease), transform .7s var(--ease); }
 .js-reveal.in { opacity: 1; transform: none; }
 
 /* ---------- 5. НАВИГАЦИЯ ---------- */
@@ -533,6 +533,30 @@ a { color: inherit; text-decoration: none; }
 .field.bad input, .field.bad textarea { border-bottom-color: #FF7183; }
 .field .err { color: #FF8B99; font-size: var(--t-small); display: none; }
 .field.bad .err { display: block; }
+
+/* Способ связи: ярлык-переключатель (Telegram / Телефон / Почта) +
+   одно поле ввода вместо трёх отдельных полей. */
+.field--contact { position: relative; }
+.method-pick { position: relative; }
+.method-pick__btn {
+  display: inline-flex; align-items: center; gap: 6px; color: var(--ink-3);
+  font-size: var(--t-small); cursor: pointer; padding: 2px 0 4px; transition: color .3s;
+}
+.method-pick__btn:hover, .method-pick__btn[aria-expanded="true"] { color: var(--ink); }
+.method-pick__arr { flex-shrink: 0; transition: transform .25s var(--ease); }
+.method-pick__btn[aria-expanded="true"] .method-pick__arr { transform: rotate(180deg); }
+.method-pick__dd {
+  position: absolute; top: calc(100% + 6px); left: 0; z-index: 6; min-width: 148px;
+  background: var(--surface); border: 1px solid var(--line); border-radius: 3px;
+  overflow: hidden; box-shadow: 0 10px 28px rgba(0, 0, 0, .22);
+}
+.method-pick__opt {
+  display: block; width: 100%; text-align: left; padding: 10px 13px;
+  font-size: var(--t-small); color: var(--ink-2); background: transparent;
+  transition: background-color .2s, color .2s;
+}
+.method-pick__opt:hover { background: var(--surface-2); color: var(--ink); }
+.method-pick__opt.is-active { color: var(--ink); font-weight: 500; }
 
 .brief__err { margin-top: var(--s3); min-height: 1.3em; color: #FF8B99; font-size: var(--t-small); }
 .brief__nav { display: flex; align-items: center; gap: var(--s3); margin-top: auto; padding-top: var(--s4); }
@@ -1425,7 +1449,42 @@ html.cine-on, html.cine-on body {
 .band.cine-slide .sec { padding-block: clamp(80px, 11vh, 108px) var(--s3); }
 .band.cine-slide .about__grid { gap: var(--s4); }
 @media (min-width: 900px) { .band.cine-slide .about__grid { gap: var(--s5); } }
-.brief.cine-slide .brief__main { min-height: 0; }
+/* Кнопка "Далее" (.brief__nav, margin-top:auto) должна стоять на одном
+   месте на каждом из 6 шагов, а не «плавать» от того, сколько полей
+   или вариантов ответа на шаге. Раньше .brief__main терял фиксированную
+   высоту (min-height:0) внутри cine-slide, и весь блок заявки просто
+   ужимался/растягивался под контент — карточка целиком (по центру
+   экрана) двигалась вверх-вниз, и кнопка вместе с ней. Теперь у
+   карточки заявки высота постоянная (под самый высокий шаг — «Контакты»
+   с 4 полями), .brief__main растягивается на всю эту высоту, и
+   margin-top:auto у .brief__nav надёжно прибивает кнопку к низу —
+   на любом шаге одно и то же место. Если контент всё же не помещается
+   (очень маленький экран) — .brief__fields скроллится сам внутри
+   карточки, а не толкает кнопку. */
+.brief.cine-slide .brief__box { height: clamp(490px, 63vh, 620px); }
+/* До 960px .brief__box — однoколоночный grid, и .brief__side/.brief__main
+   стоят друг под другом как ДВЕ implicit grid-row с auto-высотой:
+   height:100% на .brief__main в этом случае считается от auto-высоты
+   строки, которая сама зависит от контента (циклическая зависимость),
+   поэтому реальная высота всё равно "плавала" по шагам. Явно задаём
+   grid-template-rows: auto 1fr — теперь строка .brief__main это
+   конкретный трек (остаток фиксированной высоты .brief__box), и
+   height:100% резолвится в одно и то же число на любом шаге. */
+@media (max-width: 959px) {
+  .brief.cine-slide .brief__box { grid-template-rows: auto 1fr; }
+}
+.brief.cine-slide .brief__main { height: 100%; min-height: 0; overflow: hidden; }
+/* Прямые flex-дети .brief__main — это .stage-in (обёртка шага: номер,
+   вопрос, хинт, .brief__fields, ошибка) и .brief__nav. У flex-item по
+   умолчанию min-height:auto, т.е. он не может ужаться меньше своего
+   контента — на шагах с высоким контентом (например, плитки в 3 ряда)
+   .stage-in просто раздувал .brief__main сверх его фиксированной высоты,
+   и .brief__nav (margin-top:auto) в итоге стоял в разных местах на
+   разных шагах (визуально его ещё и обрезало overflow:hidden). flex:1
+   + min-height:0 отдаёт .stage-in всё "остальное" место контейнера и
+   включает собственный internal-скролл вместо раздувания — после этого
+   .brief__nav гарантированно стоит у нижнего края карточки на любом шаге. */
+.brief.cine-slide .brief__main > .stage-in { flex: 1 1 auto; min-height: 0; overflow-y: auto; }
 .brief.cine-slide .brief__done { min-height: 0; }
 @media (max-width: 719px) {
   .brief.cine-slide .tiles { grid-template-columns: repeat(2, 1fr); gap: 8px; }

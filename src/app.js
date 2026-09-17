@@ -1198,6 +1198,19 @@
        тяжёлая часть анимации и источник рывков на слабых устройствах,
        поэтому убран. */
     var TR = 'opacity ' + DURATION + 'ms ' + CINE_EASE + ', transform ' + DURATION + 'ms ' + CINE_EASE;
+    /* Уходящий слайд гасится заметно БЫСТРЕЕ входящего и до нуля, а не
+       до .32, как было раньше. Раньше расчёт был на то, что новый слайд
+       (z-index выше) перекроет старый чисто визуально за счёт стека —
+       но пока входящий сам ещё в процессе появления (--ease — это
+       быстрый старт и долгий, «доезжающий» хвост к 1), из-под него
+       добрую часть перехода просвечивал старый экран на .32 — это и
+       читалось как «предыдущая страница висит на фоне». Теперь старый
+       экран полностью исчезает примерно за половину времени перехода —
+       к моменту, когда входящий только дотягивает свой хвост, под ним
+       уже физически нечему просвечивать, независимо от того, как именно
+       идёт кривая появления нового слайда. */
+    var OUT_DURATION = Math.round(DURATION * 0.5);
+    var TR_OUT = 'opacity ' + OUT_DURATION + 'ms ' + CINE_EASE + ', transform ' + OUT_DURATION + 'ms ' + CINE_EASE;
 
     /* ---- плоский список шагов: витрина занимает три шага подряд ---- */
     var steps = [];
@@ -1251,8 +1264,8 @@
       toEl.style.opacity = '0';
       toEl.style.transform = 'translateY(' + (sign * OFFSET) + 'px)';
       void toEl.offsetHeight; // reflow — фиксируем стартовое состояние перед анимацией
-      fromEl.style.transition = TR;
-      fromEl.style.opacity = '.32';
+      fromEl.style.transition = TR_OUT;
+      fromEl.style.opacity = '0';
       fromEl.style.transform = 'translateY(' + (-sign * 26) + 'px)';
       window.requestAnimationFrame(function () {
         window.requestAnimationFrame(function () {

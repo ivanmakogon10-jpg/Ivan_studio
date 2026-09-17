@@ -1209,6 +1209,20 @@
     var total = steps.length;
     var activeIndex = 0;
     var isAnimating = false;
+    /* isAnimating держит вход закрытым только на время самого перехода
+       (~DURATION). Трекпад с инерцией на macOS после одного взмаха ещё
+       секунду-две шлёт затухающие wheel-события — как только isAnimating
+       снимается (~1с), первое же «хвостовое» событие тут же запускает
+       СЛЕДУЮЩИЙ переход, тот — следующий, и так далее. Внешне это выглядит
+       как один длинный проигрыш нескольких слайдов подряд: старый экран
+       не успевает уйти (он гаснет не до конца, а до .32 — расчёт на то,
+       что новый его перекроет), новый тут же тянет за собой третий — отсюда
+       и «фон остаётся на несколько секунд», и линия прогресса на «Подходе»,
+       которая успевает доиграть, пока пользователь ещё не долистал до неё.
+       navLockUntil — отдельный, более долгий засов именно для перехода
+       МЕЖДУ секциями: гасит этот инерционный хвост, оставляя один взмах
+       трекпада/колеса = один переход. */
+    var navLockUntil = 0;
 
     function setChrome(index) {
       var s = steps[index];
@@ -1256,7 +1270,7 @@
     }
 
     function goTo(target) {
-      if (isAnimating) return;
+      if (isAnimating || Date.now() < navLockUntil) return;
       target = Math.max(0, Math.min(total - 1, target));
       if (target === activeIndex) return;
       var dir = target > activeIndex ? 1 : -1;
@@ -1273,6 +1287,9 @@
       }
 
       isAnimating = true;
+      // Держим вход закрытым заметно дольше самого перехода — гасит
+      // инерционный хвост трекпада (см. комментарий у объявления navLockUntil).
+      navLockUntil = Date.now() + DURATION + 550;
       var enteringShowcase = to.el.classList.contains('show');
 
       /* Фон (шейдер), линия прогресса, состояние навигации и проявление
@@ -1319,7 +1336,7 @@
     /* ---- ввод: колесо, свайп, клавиатура ---- */
     function onWheel(e) {
       if (e.target.closest && e.target.closest('textarea')) return;
-      if (isAnimating) { e.preventDefault(); return; }
+      if (isAnimating || Date.now() < navLockUntil) { e.preventDefault(); return; }
       if (Math.abs(e.deltaY) < 4) return;
       e.preventDefault();
       goTo(activeIndex + (e.deltaY > 0 ? 1 : -1));

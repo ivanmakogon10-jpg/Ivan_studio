@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630">
+  <rect width="1200" height="630" fill="#F3EEE2"/>
+  <line x1="90" y1="120" x2="1110" y2="120" stroke="#201F1B" stroke-opacity="0.12"/>
+  <text x="90" y="330" font-family="Georgia, 'Times New Roman', serif" font-size="96" fill="#201F1B" font-weight="600">NORTH <tspan fill="#2B46E0" font-style="italic">&amp;</tspan> CO.</text>
+  <text x="90" y="390" font-family="Arial, sans-serif" font-size="28" letter-spacing="2" fill="#2B46E0" font-weight="700">БИЗНЕС, КОТОРЫЙ ВЫГЛЯДИТ НА УРОВЕНЬ ВЫШЕ.</text>
+  <text x="90" y="560" font-family="Arial, sans-serif" font-size="20" letter-spacing="3" fill="#A79D8A">BUSINESS / DIGITAL / 2026</text>
+  <circle cx="1060" cy="150" r="46" fill="none" stroke="#2B46E0" stroke-width="2"/>
+</svg>

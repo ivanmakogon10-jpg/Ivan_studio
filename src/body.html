@@ -1,0 +1,249 @@
+<a class="skip" href="#main">Перейти к содержанию</a>
+
+<div class="page-shader" id="pageShader" aria-hidden="true">
+  <canvas id="pageShaderCanvas"></canvas>
+</div>
+
+<div class="progress" id="progress" aria-hidden="true"><i></i></div>
+
+<div class="cursor" id="cursor" aria-hidden="true">
+  <div class="cursor__ring"><span class="cursor__label" id="cursorLabel"></span></div>
+  <div class="cursor__dot"></div>
+</div>
+
+<!-- HEADER -->
+<header class="nav" id="nav">
+  <div class="shell nav__in">
+    <a class="brand mono" href="#top" aria-label="Ivan Studio — на главную">Ivan Studio</a>
+
+    <nav class="nav__links" aria-label="Основная навигация">
+      <a class="nav__link mono" href="#showcase"><span>Work</span></a>
+      <a class="nav__link mono" href="#services"><span>Services</span></a>
+      <a class="nav__link mono" href="#about"><span>About</span></a>
+      <a class="nav__link mono" href="#contact"><span>Contact</span></a>
+    </nav>
+
+    <div class="nav__tools">
+      <button class="burger" id="burger" type="button" aria-expanded="false" aria-controls="sheet" aria-label="Открыть меню">
+        <span></span><span></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<nav class="sheet" id="sheet" aria-label="Меню" aria-hidden="true">
+  <div class="sheet__nav">
+    <a class="sheet__link" href="#showcase"><span class="mono">01</span>Работы</a>
+    <a class="sheet__link" href="#services"><span class="mono">02</span>Услуги</a>
+    <a class="sheet__link" href="#about"><span class="mono">03</span>О студии</a>
+    <a class="sheet__link" href="#contact"><span class="mono">04</span>Контакты</a>
+  </div>
+  <div class="sheet__foot">
+    <a data-c="tg" href="https://t.me/ivxtxx"><span data-c-text="tg">@ivxtxx</span></a>
+    <a data-c="mail" href="mailto:ivanmakogon10@gmail.com"><span data-c-text="mail">ivanmakogon10@gmail.com</span></a>
+    <a data-c="tel" href="tel:+79897224022"><span data-c-text="tel">+7 989 722-40-22</span></a>
+  </div>
+</nav>
+
+<main id="main">
+
+  <!-- HERO -->
+  <section class="hero" id="top">
+    <canvas class="hero__field" id="heroField" aria-hidden="true"></canvas>
+    <div class="hero__decor" aria-hidden="true">
+      <span class="hero__glow"></span>
+      <span class="hero__ring"></span>
+      <span class="hero__axis"></span>
+      <span class="hero__rule"></span>
+    </div>
+
+    <div class="shell hero__mid">
+      <p class="lab mono" id="heroEyebrow"></p>
+      <h1 class="hero__h1" id="heroTitle"></h1>
+      <p class="hero__sub" id="heroText"></p>
+      <div class="hero__cta" id="heroCta"></div>
+    </div>
+
+    <div class="shell hero__foot">
+      <div class="hero__idx">
+        <span class="hero__idx-n mono" id="heroIndex">01 / 03</span>
+        <span class="lab mono">Selected work</span>
+      </div>
+      <a class="hero__scroll mono" href="#showcase">
+        <span id="heroScroll">Листай</span>
+        <span class="hero__mouse" aria-hidden="true"><i></i></span>
+      </a>
+    </div>
+  </section>
+
+  <!-- Тёмная сцена: от витрины и до конца сайта — фиксированный шейдер
+       просвечивает сквозь эту обёртку (см. .stage-dark в styles.css),
+       поэтому у секций внутри нет своего непрозрачного фона. -->
+  <div class="stage-dark" id="stageDark">
+
+  <!-- ВИТРИНА ПРОЕКТОВ — устройства приближаются, карточки листаются -->
+  <section class="show" id="showcase" aria-labelledby="showTitle">
+    <div class="show__sticky">
+
+      <div class="show__lead" id="showLead">
+        <p class="lab mono">Selected work</p>
+        <h2 class="show__h2" id="showTitle">Посмотрите мои работы</h2>
+        <p class="show__note" id="showNote"></p>
+      </div>
+
+      <div class="show__space" id="showSpace">
+        <div class="show__plate" id="showPlate">
+          <div class="dev dev--mac">
+            <span class="dev__glow" aria-hidden="true"></span>
+            <a class="dev__screen" id="macScreen" href="#" target="_blank" rel="noopener" data-cursor="Открыть"></a>
+            <img class="dev__body" id="showMac" src="" alt="" decoding="async">
+          </div>
+          <div class="dev dev--phone">
+            <span class="dev__glow" aria-hidden="true"></span>
+            <a class="dev__screen" id="phoneScreen" href="#" target="_blank" rel="noopener" tabindex="-1" aria-hidden="true"></a>
+            <img class="dev__body" id="showPhoneBody" src="" alt="" decoding="async" aria-hidden="true">
+          </div>
+        </div>
+      </div>
+
+      <div class="show__ui" id="showUi">
+        <button class="show__arrow show__arrow--prev" id="showPrev" type="button" aria-label="Предыдущая работа" data-cursor="Назад">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M20 12H5M11 6l-6 6 6 6"/></svg>
+        </button>
+        <button class="show__arrow show__arrow--next" id="showNext" type="button" aria-label="Следующая работа" data-cursor="Дальше">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M4 12h15M13 6l6 6-6 6"/></svg>
+        </button>
+
+        <div class="show__foot">
+          <span class="show__count mono"><b id="showNum">01</b><i>/</i><span id="showTotal">03</span></span>
+          <span class="show__name" id="showName"></span>
+          <span class="show__meta mono" id="showMeta"></span>
+          <a class="show__open" id="showOpen" href="#" target="_blank" rel="noopener" data-cursor="Открыть">
+            <span id="showOpenLabel">Открыть сайт</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8"/></svg>
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- SERVICES -->
+  <section class="band services" id="services" aria-labelledby="svcTitle">
+    <div class="shell">
+      <header class="sec">
+        <p class="lab mono">Services</p>
+        <h2 class="sec__title" id="svcTitle">Что можно сделать</h2>
+        <p class="sec__note">Цены стартовые. Ниже — расчёт под конкретную задачу.</p>
+      </header>
+      <div class="srows" id="svcList"></div>
+      <p class="srows__note" id="svcNote"></p>
+    </div>
+  </section>
+
+  <!-- PROCESS -->
+  <section class="band process" id="process" aria-labelledby="procTitle">
+    <div class="shell">
+      <header class="sec">
+        <p class="lab mono">How I work</p>
+        <h2 class="sec__title" id="procTitle">Подход</h2>
+        <p class="sec__note">Четыре этапа от задачи до запуска.</p>
+      </header>
+      <div class="prows" id="procList"></div>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section class="band about" id="about" aria-labelledby="aboutTitle">
+    <div class="shell">
+      <header class="sec">
+        <p class="lab mono">About</p>
+        <h2 class="sec__title" id="aboutTitle">О студии</h2>
+      </header>
+      <div class="about__grid" id="aboutGrid"></div>
+    </div>
+  </section>
+
+  <!-- BRIEF -->
+  <section class="band brief" id="brief" aria-labelledby="briefTitle">
+    <div class="shell">
+      <header class="sec">
+        <p class="lab mono">Brief</p>
+        <h2 class="sec__title" id="briefTitle">Заявка</h2>
+        <p class="sec__note">Шесть коротких вопросов вместо длинной формы.</p>
+      </header>
+      <form class="brief__box" id="briefForm" novalidate>
+        <div class="brief__side" id="briefTicks"></div>
+        <div class="brief__main" id="briefMain"></div>
+      </form>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section class="band contact" id="contact" aria-labelledby="contactTitle">
+    <div class="shell">
+      <div class="contact__top">
+        <p class="lab mono">Contact</p>
+        <h2 class="contact__h2" id="contactTitle">Есть идея?<em>Давайте превратим её в интерфейс.</em></h2>
+        <div class="contact__cta">
+          <a class="btn" href="#brief" data-magnetic>Обсудить проект
+            <svg class="arr" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 12h15M13 6l6 6-6 6"/></svg>
+          </a>
+          <a class="link-arrow mono" data-c="tg" href="https://t.me/ivxtxx" target="_blank" rel="noopener">Написать в Telegram
+            <svg class="arr" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg>
+          </a>
+        </div>
+      </div>
+
+      <div class="mark" aria-hidden="true">
+        <div class="mark__stage" id="markStage">
+          <div class="mark__rotor">
+            <div class="pane" style="transform:rotateY(0deg) translateZ(70px) scale(.82)"></div>
+            <div class="pane" style="transform:rotateY(90deg) translateZ(70px) scale(.82)"></div>
+            <div class="pane" style="transform:rotateX(90deg) translateZ(66px) scale(.66)"></div>
+            <div class="pane" style="transform:rotateY(38deg) rotateX(34deg) translateZ(50px) scale(1.02)"></div>
+            <div class="pane pane--core" style="transform:rotateY(18deg) translateZ(8px) scale(.6)"></div>
+            <div class="pane pane--core" style="transform:rotateY(104deg) translateZ(8px) scale(.5);opacity:.6"></div>
+          </div>
+          <div class="mark__orbit"></div>
+        </div>
+      </div>
+
+      <ul class="ways">
+        <li><a class="way" data-c="tg" href="https://t.me/ivxtxx" target="_blank" rel="noopener">
+          <span class="lab mono">Telegram</span>
+          <span class="way__v"><span data-c-text="tg">@ivxtxx</span>
+            <svg class="arr" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg>
+          </span>
+        </a></li>
+        <li><a class="way" data-c="mail" href="mailto:ivanmakogon10@gmail.com">
+          <span class="lab mono">Email</span>
+          <span class="way__v"><span data-c-text="mail">ivanmakogon10@gmail.com</span>
+            <svg class="arr" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg>
+          </span>
+        </a></li>
+        <li><a class="way" data-c="tel" href="tel:+79897224022">
+          <span class="lab mono">Телефон</span>
+          <span class="way__v"><span data-c-text="tel">+7 989 722-40-22</span>
+            <svg class="arr" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg>
+          </span>
+        </a></li>
+      </ul>
+    </div>
+  </section>
+
+  <footer class="foot">
+    <div class="shell foot__in mono">
+      <span class="foot__brand">Ivan Studio</span>
+      <span>Web Design / Development</span>
+      <span>© <span id="year">2026</span></span>
+    </div>
+  </footer>
+
+  </div><!-- /.stage-dark -->
+</main>
+
+<script src="data.js"></script>
+<script src="particles.js"></script>
+<script src="shader-field.js"></script>
+<script src="app.js"></script>

@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NOIR TABLE — Ужин, который запоминают</title>
+<meta name="description" content="NOIR TABLE — камерный ресторан европейской кухни с авторской подачей. Кухня 18:00—00:00.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="grain-overlay" aria-hidden="true"></div>
+<div class="cursor-dot" aria-hidden="true"></div>
+
+<a class="skip-link" href="#main">Перейти к содержанию</a>
+
+<!-- ===================== HEADER ===================== -->
+<header class="site-header" id="siteHeader">
+  <div class="header-inner">
+    <a href="#top" class="logo">NOIR&nbsp;TABLE</a>
+
+    <div class="header-status" aria-hidden="true">
+      <span class="status-dot"></span>
+      КУХНЯ&nbsp;•&nbsp;18:00—00:00
+    </div>
+
+    <nav class="header-actions" aria-label="Основное меню">
+      <button class="link-btn" id="menuToggle" aria-expanded="false" aria-controls="mobileMenu">
+        <span class="menu-label-open">MENU</span>
+        <span class="menu-label-close">CLOSE</span>
+      </button>
+      <a href="#reservation" class="link-btn link-btn--filled">RESERVE</a>
+    </nav>
+  </div>
+</header>
+
+<!-- Mobile menu -->
+<div class="mobile-menu" id="mobileMenu" aria-hidden="true">
+  <div class="mobile-menu-inner">
+    <ol class="mobile-menu-list">
+      <li style="--i:0"><a href="#menu" data-close>Меню</a></li>
+      <li style="--i:1"><a href="#signature" data-close>Фирменное блюдо</a></li>
+      <li style="--i:2"><a href="#kitchen" data-close>Кухня</a></li>
+      <li style="--i:3"><a href="#atmosphere" data-close>Атмосфера</a></li>
+      <li style="--i:4"><a href="#reservation" data-close>Бронирование</a></li>
+      <li style="--i:5"><a href="#location" data-close>Локация</a></li>
+    </ol>
+    <div class="mobile-menu-foot">
+      <span>КУХНЯ • 18:00—00:00</span>
+      <span>Friedrichstraße 00, Berlin</span>
+    </div>
+  </div>
+</div>
+
+<main id="main">
+
+  <!-- ===================== HERO ===================== -->
+  <section class="hero" id="top">
+    <div class="hero-grid">
+      <div class="hero-copy" data-reveal>
+        <span class="eyebrow">NOIR TABLE — BERLIN</span>
+        <h1 class="hero-title">
+          <span class="line">ЕДА,</span>
+          <span class="line">КОТОРУЮ</span>
+          <span class="line">ЗАПОМИНАЮТ.</span>
+        </h1>
+      </div>
+
+      <figure class="hero-figure" data-reveal>
+        <img src="images/hero-signature.jpg" alt="Фирменное блюдо NOIR TABLE — утка с вишней и тимьяном, крупным планом" loading="eager">
+        <figcaption>01 / SIGNATURE</figcaption>
+      </figure>
+
+      <p class="hero-sub" data-reveal>
+        Авторская европейская кухня.<br>
+        Каждый вечер — немного другой.
+      </p>
+
+      <div class="hero-scroll" aria-hidden="true">
+        <span>SCROLL TO DISCOVER</span>
+        <span class="hero-scroll-line"></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== INTRO / MANIFESTO ===================== -->
+  <section class="manifesto">
+    <div class="manifesto-grid">
+      <p class="manifesto-lead" data-reveal>
+        Мы не стремимся удивить вас&nbsp;количеством.<br>
+        Мы стремимся оставить <em>послевкусие</em>.
+      </p>
+      <div class="manifesto-note" data-reveal>
+        <span class="manifesto-index">02 / PHILOSOPHY</span>
+        <p>
+          Короткое меню, длинная подготовка. Мы работаем с сезонными
+          продуктами локальных фермеров и меняем блюда, когда меняется
+          вкус ингредиента — а не календарь. Тарелка собирается за
+          несколько часов до подачи, а идея к ней — месяцами раньше.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== MENU EXPERIENCE ===================== -->
+  <section class="menu-exp" id="menu">
+    <div class="menu-head" data-reveal>
+      <span class="section-index">03 / MENU</span>
+      <h2>Каталог блюд</h2>
+    </div>
+
+    <div class="menu-tabs" role="tablist" aria-label="Категории меню">
+      <button class="menu-tab is-active" role="tab" aria-selected="true" data-cat="start">START</button>
+      <button class="menu-tab" role="tab" aria-selected="false" data-cat="pasta">PASTA</button>
+      <button class="menu-tab" role="tab" aria-selected="false" data-cat="fire">FIRE</button>
+      <button class="menu-tab" role="tab" aria-selected="false" data-cat="dessert">DESSERT</button>
+      <button class="menu-tab" role="tab" aria-selected="false" data-cat="wine">WINE</button>
+    </div>
+
+    <div class="menu-stage">
+      <ul class="menu-list" id="menuList">
+
+        <li class="menu-item is-active" data-cat="start" data-img="images/menu-burrata.jpg">
+          <button class="menu-row">
+            <span class="menu-name">Burrata <i>/ tomato / basil</i></span>
+            <span class="menu-dots" aria-hidden="true"></span>
+            <span class="menu-price">14</span>
+          </button>
+        </li>
+        <li class="menu-item" data-cat="start" data-img="images/menu-tagliolini.jpg">
+          <button class="menu-row">
+            <span class="menu-name">Tartare <i>/ beef / capers</i></span>
+            <span class="menu-dots" aria-hidden="true"></span>
+            <span class="menu-price">18</span>
+          </button>
+        </li>
+
+        <li class="menu-item" data-cat="pasta" data-img="images/menu-tagliolini.jpg">
+          <button class="menu-row">
+            <span class="menu-name">Tagliolini <i>/ crab / lemon</i></span>
+            <span class="menu-dots" aria-hidden="true"></span>
+            <span class="menu-price">24</span>
+          </button>
+        </li>
+        <li class="menu-item" data-cat="pasta" data-img="images/menu-burrata.jpg">
+          <button class="menu-row">
+            <span class="menu-name">Risotto <i>/ porcini / thyme</i></span>
+            <span class="menu-dots" aria-hidden="true"></span>
+            <span class="menu-price">22</span>
+          </button>
+        </li>
+
+        <li class="menu-item" data-cat="fire" data-img="images/menu-duck.jpg">
+          <button class="menu-row">
+            <span class="menu-name">Duck <i>/ cherry / thyme</i></span>
+            <span class="menu-dots" aria-hidden="true"></span>
+            <span class="menu-price">29</span>
+          </button>
+        </li>
+        <li class="menu-item" data-cat="fire" data-img="images/menu-duck.jpg">
+          <button class="menu-row">
+            <span class="menu-name">Ribeye <i>/ bone marrow / sage</i></span>
+            <span class="menu-dots" aria-hidden="true"></span>
+            <span class="menu-price">34</span>
+          </button>
+        </li>
+
+        <li class="menu-item" data-cat="dessert" data-img="images/menu-dessert.jpg">
+          <button class="menu-row">
+            <span class="menu-name">Chocolate <i>/ salt / olive oil</i></span>
+            <span class="menu-dots" aria-hidden="true"></span>
+            <span class="menu-price">12</span>
+          </button>
+        </li>
+        <li class="menu-item" data-cat="dessert" data-img="images/menu-dessert.jpg">
+          <button class="menu-row">
+            <span class="menu-name">Fig <i>/ mascarpone / honey</i></span>
+            <span class="menu-dots" aria-hidden="true"></span>
+            <span class="menu-price">11</span>
+          </button>
+        </li>
+
+        <li class="menu-item" data-cat="wine" data-img="images/atmosphere-glass.jpg">
+          <button class="menu-row">
+            <span class="menu-name">Riesling <i>/ Mosel, 2021</i></span>
+            <span class="menu-dots" aria-hidden="true"></span>
+            <span class="menu-price">9</span>
+          </button>
+        </li>
+        <li class="menu-item" data-cat="wine" data-img="images/atmosphere-glass.jpg">
+          <button class="menu-row">
+            <span class="menu-name">Barbera <i>/ Piemonte, 2019</i></span>
+            <span class="menu-dots" aria-hidden="true"></span>
+            <span class="menu-price">11</span>
+          </button>
+        </li>
+
+      </ul>
+
+      <div class="menu-preview" id="menuPreview" aria-hidden="true">
+        <img id="menuPreviewImg" src="images/menu-burrata.jpg" alt="">
+      </div>
+    </div>
+
+    <div class="menu-cta" data-reveal>
+      <a href="#" class="text-btn">ОТКРЫТЬ ПОЛНОЕ МЕНЮ <span>→</span></a>
+    </div>
+  </section>
+
+  <!-- ===================== SIGNATURE DISH ===================== -->
+  <section class="signature" id="signature">
+    <div class="signature-media" data-reveal>
+      <img src="images/signature-duck-large.jpg" alt="Крупный план фирменного блюда: утка, вишнёвый соус, тимьян" loading="lazy">
+    </div>
+    <div class="signature-copy">
+      <span class="signature-index" data-reveal>SIGNATURE 03</span>
+      <h2 class="signature-title" data-reveal>
+        УТКА.<br>ВИШНЯ.<br>ТИМЬЯН.
+      </h2>
+      <p class="signature-desc" data-reveal>
+        Утиная грудка выдерживается 48 часов, затем готовится на кости
+        для плотности вкуса. Вишнёвый соус — без сахара, на кислоте
+        ягоды. Тимьян появляется дважды: в масле для обжарки и в
+        последней капле поверх соуса.
+      </p>
+      <span class="signature-line" aria-hidden="true"></span>
+      <span class="signature-price" data-reveal>29&nbsp;€</span>
+    </div>
+  </section>
+
+  <!-- ===================== THE KITCHEN ===================== -->
+  <section class="kitchen" id="kitchen">
+    <div class="kitchen-head" data-reveal>
+      <span class="section-index">04 / PEOPLE</span>
+      <h2>ЗА КАЖДЫМ БЛЮДОМ<br>СТОИТ ЧЕЛОВЕК.</h2>
+    </div>
+
+    <div class="kitchen-collage" data-reveal>
+      <figure class="k-photo k-photo--1">
+        <img src="images/kitchen-chef.jpg" alt="Шеф-повар NOIR TABLE за работой на кухне" loading="lazy">
+        <figcaption>CHEF</figcaption>
+      </figure>
+      <figure class="k-photo k-photo--2">
+        <img src="images/kitchen-pastry.jpg" alt="Кондитер NOIR TABLE готовит десерт" loading="lazy">
+        <figcaption>PASTRY</figcaption>
+      </figure>
+      <figure class="k-photo k-photo--3">
+        <img src="images/kitchen-sommelier.jpg" alt="Сомелье NOIR TABLE подбирает вино" loading="lazy">
+        <figcaption>SOMMELIER</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- ===================== ATMOSPHERE GALLERY ===================== -->
+  <section class="atmosphere" id="atmosphere">
+    <div class="atmosphere-head" data-reveal>
+      <span class="section-index">05 / ATMOSPHERE</span>
+      <h2>Внутри NOIR TABLE</h2>
+      <span class="atmosphere-hint">ПРОКРУТИТЕ →</span>
+    </div>
+
+    <div class="atmosphere-track-wrap">
+      <ul class="atmosphere-track" id="atmosphereTrack" tabindex="0" aria-label="Галерея интерьера ресторана, прокручивается горизонтально">
+        <li><img src="images/atmosphere-interior.jpg" alt="Тёмный зал ресторана в вечернем освещении" loading="lazy"></li>
+        <li><img src="images/atmosphere-kitchen-action.jpg" alt="Открытая кухня в разгар вечера" loading="lazy"></li>
+        <li><img src="images/atmosphere-tableware.jpg" alt="Детали сервировки стола" loading="lazy"></li>
+        <li><img src="images/atmosphere-hands.jpg" alt="Руки повара за финальной подачей блюда" loading="lazy"></li>
+        <li><img src="images/atmosphere-evening-hall.jpg" alt="Вечерний зал, заполненный гостями" loading="lazy"></li>
+        <li><img src="images/atmosphere-glass.jpg" alt="Бокал вина на барной стойке" loading="lazy"></li>
+        <li><img src="images/atmosphere-material.jpg" alt="Фактура дерева и материалов интерьера" loading="lazy"></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ===================== EVENING ===================== -->
+  <section class="evening">
+    <img class="evening-bg" src="images/evening-bg.jpg" alt="" aria-hidden="true">
+    <div class="evening-veil" aria-hidden="true"></div>
+    <div class="evening-content">
+      <h2 data-reveal>ВЕЧЕР НАЧИНАЕТСЯ<br>НЕ С БЛЮДА.</h2>
+      <p data-reveal>Он начинается с первого взгляда,<br>первого бокала и первого разговора.</p>
+      <div class="evening-hours" data-reveal>
+        <div>
+          <span class="evening-label">DINNER</span>
+          <span class="evening-time">18:00 — 00:00</span>
+        </div>
+        <div>
+          <span class="evening-label">BAR</span>
+          <span class="evening-time">18:00 — 01:00</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== RESERVATION ===================== -->
+  <section class="reservation" id="reservation">
+    <div class="reservation-head" data-reveal>
+      <span class="section-index">06 / RESERVE</span>
+    </div>
+
+    <form class="reservation-form" id="reservationForm" novalidate>
+      <p class="reservation-sentence">
+        Я хочу столик для
+        <span class="field-wrap">
+          <input type="number" id="guests" name="guests" min="1" max="12" value="2" inputmode="numeric" aria-label="Количество гостей" required>
+          <span class="field-suffix" id="guestsSuffix">гостей</span>
+        </span>
+        на
+        <span class="field-wrap field-wrap--date">
+          <input type="text" id="date" name="date" placeholder="24 SEPTEMBER" aria-label="Дата" autocomplete="off" required>
+        </span>
+        в
+        <span class="no-break">
+          <span class="field-wrap field-wrap--time">
+            <input type="text" id="time" name="time" placeholder="20:30" aria-label="Время" autocomplete="off" required>
+          </span>.
+        </span>
+      </p>
+
+      <div class="reservation-row">
+        <span class="field-wrap field-wrap--name">
+          <input type="text" id="name" name="name" placeholder="ВАШЕ ИМЯ" aria-label="Ваше имя" autocomplete="name" required>
+        </span>
+        <span class="field-wrap field-wrap--phone">
+          <input type="tel" id="phone" name="phone" placeholder="ТЕЛЕФОН" aria-label="Телефон" autocomplete="tel" required>
+        </span>
+      </div>
+
+      <p class="form-error" id="formError" role="alert" aria-live="polite"></p>
+
+      <button type="submit" class="reserve-submit">
+        RESERVE A TABLE <span>→</span>
+      </button>
+    </form>
+
+    <div class="reservation-confirm" id="reservationConfirm" aria-live="polite" hidden>
+      <span class="confirm-index">✓</span>
+      <h3>Столик почти ваш.</h3>
+      <p id="confirmText">Мы свяжемся с вами в течение часа, чтобы подтвердить бронь.</p>
+      <button type="button" class="text-btn" id="confirmReset">ЗАБРОНИРОВАТЬ ЕЩЁ ОДИН СТОЛИК</button>
+    </div>
+  </section>
+
+  <!-- ===================== LOCATION ===================== -->
+  <section class="location" id="location">
+    <div class="location-info" data-reveal>
+      <span class="section-index">07 / VISIT</span>
+      <h2>NOIR TABLE</h2>
+      <address>
+        Friedrichstraße 00<br>
+        10117 Berlin
+      </address>
+      <p class="location-hours">Tue — Sun<br>18:00 — 00:00</p>
+      <p class="location-phone"><a href="tel:+490000000">+49 00 000000</a></p>
+      <a href="https://maps.google.com" target="_blank" rel="noopener" class="text-btn">GET DIRECTIONS <span>→</span></a>
+    </div>
+
+    <div class="location-map" aria-hidden="true" data-reveal>
+      <svg viewBox="0 0 400 400" class="map-svg">
+        <line x1="0" y1="80" x2="400" y2="80" class="map-road"></line>
+        <line x1="0" y1="240" x2="400" y2="220" class="map-road"></line>
+        <line x1="140" y1="0" x2="120" y2="400" class="map-road"></line>
+        <line x1="300" y1="0" x2="320" y2="400" class="map-road"></line>
+        <circle cx="220" cy="150" r="6" class="map-point"></circle>
+        <text x="235" y="145" class="map-label">NOIR TABLE</text>
+      </svg>
+    </div>
+  </section>
+
+</main>
+
+<!-- ===================== FOOTER ===================== -->
+<footer class="site-footer">
+  <div class="footer-top">
+    <span class="footer-logo">NOIR TABLE</span>
+    <nav class="footer-links" aria-label="Дополнительные ссылки">
+      <a href="https://instagram.com" target="_blank" rel="noopener">INSTAGRAM</a>
+      <a href="#reservation">RESERVATION</a>
+      <a href="#location">CONTACT</a>
+    </nav>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 NOIR TABLE</span>
+    <span class="footer-tagline">SEE YOU AFTER DARK.</span>
+  </div>
+</footer>
+
+<script src="script.js"></script>
+
+<!-- ============ Ivan Studio: возврат в портфолио ============ -->
+<a class="ivan-back" id="ivanBack" href="../../index.html">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M19 12H6M12 5l-7 7 7 7"/></svg>
+  <span><span class="ivan-back__full">Вернуться в </span>Ivan Studio</span>
+</a>
+<style>
+.ivan-back{position:fixed;top:clamp(78px,9vh,104px);right:clamp(14px,2.2vw,28px);z-index:99999;display:inline-flex;align-items:center;gap:10px;min-height:48px;padding:13px 22px;border-radius:999px;border:1px solid rgba(255,255,255,.24);background:#0A0D14;color:#fff;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Helvetica Neue',Arial,sans-serif;font-size:14px;font-weight:600;letter-spacing:.01em;line-height:1;text-decoration:none;box-shadow:0 18px 40px -18px rgba(0,0,0,.75);transition:background-color .25s ease,border-color .25s ease,transform .25s ease}
+.ivan-back svg{width:16px;height:16px;transition:transform .25s ease}
+.ivan-back:hover,.ivan-back:focus-visible{background:#2563FF;border-color:#2563FF;transform:translateX(-3px)}
+.ivan-back:hover svg,.ivan-back:focus-visible svg{transform:translateX(-3px)}
+@media (max-width:760px){.ivan-back{top:auto;bottom:16px;right:16px;padding:12px 18px;font-size:13px}.ivan-back__full{display:none}}
+@media print{.ivan-back{display:none}}
+</style>
+<script>
+(function () {
+  var b = document.getElementById('ivanBack');
+  if (!b) return;
+  // сайт открыт из портфолио в новой вкладке — закрываем её и
+  // возвращаемся на уже открытую Ivan Studio; иначе просто переходим
+  b.addEventListener('click', function (e) {
+    if (window.opener && !window.opener.closed) {
+      e.preventDefault();
+      try { window.opener.focus(); } catch (err) {}
+      window.close();
+    }
+  });
+})();
+</script>
+
+</body>
+</html>

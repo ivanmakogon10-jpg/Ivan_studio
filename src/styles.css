@@ -1188,7 +1188,10 @@ a { color: inherit; text-decoration: none; }
   transition: opacity .8s var(--ease), transform .8s var(--ease);
 }
 .card.is-live { opacity: 1; transform: translateX(0); }
-.card__shot { width: 100%; height: 100%; object-fit: contain; object-position: top center; background: #05070C; }
+.card__shot {
+  width: 100%; height: 100%; min-height: 0; min-width: 0;
+  object-fit: contain; object-position: top center; background: #05070C;
+}
 .card__bar {
   display: flex;
   align-items: center;
@@ -1311,7 +1314,7 @@ a { color: inherit; text-decoration: none; }
    Приближения нет — карточка работы стоит обычным блоком.
    ============================================================= */
 .show--flat { height: auto !important; }
-.show--flat .show__sticky { position: static; height: auto; overflow: visible; padding: var(--s6) 0 var(--s5); }
+.show--flat .show__sticky { position: static; height: auto; overflow: hidden; padding: var(--s6) 0 var(--s5); }
 .show--flat .show__lead {
   position: static;
   padding-inline: var(--gutter);
@@ -1324,7 +1327,7 @@ a { color: inherit; text-decoration: none; }
   inset: auto;
   height: auto;
   margin: 0 var(--gutter);
-  overflow: visible;
+  overflow: hidden;
 }
 .show--flat .show__plate {
   position: static;
